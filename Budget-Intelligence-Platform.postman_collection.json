@@ -1,0 +1,350 @@
+{
+  "info": {
+    "name": "Budget Intelligence Platform - Complete API",
+    "description": "Complete API collection with Google OAuth2 and Multi-Tenancy Security",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "central_access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "invitation_hash",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "temp_password",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1️⃣ Central Admin - Google OAuth",
+      "item": [
+        {
+          "name": "Get Google Login URL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "console.log('🔗 Authorization URL:', jsonData.authorization_url);",
+                  "console.log('');",
+                  "console.log('📋 NEXT STEPS:');",
+                  "console.log('1. Copy the authorization_url above');",
+                  "console.log('2. Open it in browser');",
+                  "console.log('3. Sign in with Google');",
+                  "console.log('4. Copy the code from redirect URL');",
+                  "console.log('5. Use it in next request');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/auth/google/login"
+          }
+        },
+        {
+          "name": "Exchange Code for Central Admin Tokens",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "if (jsonData.access_token) {",
+                  "    pm.collectionVariables.set('central_access_token', jsonData.access_token);",
+                  "    pm.collectionVariables.set('refresh_token', jsonData.refresh_token);",
+                  "    console.log('✅ Central Admin tokens saved!');",
+                  "    console.log('👤 User:', jsonData.user.email);",
+                  "    console.log('');",
+                  "    console.log('📋 You can now:');",
+                  "    console.log('- Create invitations for state/minister admins');",
+                  "    console.log('- Manage all invitations');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"PASTE_GOOGLE_CODE_HERE\"\n}"
+            },
+            "url": "{{base_url}}/auth/google/callback"
+          }
+        },
+        {
+          "name": "Get Central Admin Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{central_access_token}}"
+              }
+            ],
+            "url": "{{base_url}}/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2️⃣ Central Admin - Invitation Management",
+      "item": [
+        {
+          "name": "Create Invitation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "if (jsonData.invitation_hash) {",
+                  "    pm.collectionVariables.set('invitation_hash', jsonData.invitation_hash);",
+                  "    console.log('✅ Invitation created successfully!');",
+                  "    console.log('📧 Email:', jsonData.email);",
+                  "    console.log('🔗 Dashboard URL:', jsonData.dashboard_url);",
+                  "    console.log('🔑 Hash saved to collection variable');",
+                  "    console.log('');",
+                  "    console.log('⚠️  CHECK CONSOLE OUTPUT for temporary password!');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{central_access_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"maharashtra.admin@gov.in\",\n  \"tenant_type\": \"state_government\",\n  \"tenant_name\": \"Maharashtra State Government\",\n  \"tenant_code\": \"MH-GOV-2024\",\n  \"description\": \"Maharashtra state budget administrator\",\n  \"expires_in_days\": 7\n}"
+            },
+            "url": "{{base_url}}/security/central/invitations/"
+          }
+        },
+        {
+          "name": "List All Invitations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{central_access_token}}"}
+            ],
+            "url": "{{base_url}}/security/central/invitations/"
+          }
+        },
+        {
+          "name": "Get Invitation Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{central_access_token}}"}
+            ],
+            "url": "{{base_url}}/security/central/invitations/stats"
+          }
+        },
+        {
+          "name": "Revoke Invitation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{central_access_token}}"}
+            ],
+            "url": "{{base_url}}/security/central/invitations/INVITATION_ID_HERE/revoke"
+          }
+        },
+        {
+          "name": "Cleanup Expired Invitations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{central_access_token}}"}
+            ],
+            "url": "{{base_url}}/security/central/invitations/cleanup-expired"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3️⃣ State/Minister Admin - Authentication",
+      "item": [
+        {
+          "name": "Admin Login (First Time)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "if (jsonData.access_token) {",
+                  "    pm.collectionVariables.set('admin_access_token', jsonData.access_token);",
+                  "    console.log('✅ Admin login successful!');",
+                  "    console.log('🏛️  Tenant:', jsonData.tenant_name);",
+                  "    console.log('🔑 Requires Public Key:', jsonData.requires_public_key);",
+                  "    console.log('');",
+                  "    if (jsonData.requires_public_key) {",
+                  "        console.log('📋 NEXT STEPS:');",
+                  "        console.log('1. Generate SSH keys: ssh-keygen -t ed25519 -C \"your@email.com\"');",
+                  "        console.log('2. Get public key: cat ~/.ssh/id_ed25519.pub');",
+                  "        console.log('3. Upload it using \"Upload Public Key\" endpoint');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"maharashtra.admin@gov.in\",\n  \"temporary_password\": \"PASTE_FROM_CONSOLE\",\n  \"invitation_hash\": \"{{invitation_hash}}\"\n}"
+            },
+            "url": "{{base_url}}/security/admin/login"
+          }
+        },
+        {
+          "name": "Upload Public Key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "if (jsonData.success) {",
+                  "    console.log('✅ Public key uploaded successfully!');",
+                  "    console.log('🔐 Fingerprint:', jsonData.fingerprint);",
+                  "    console.log('');",
+                  "    console.log('📋 You can now:');",
+                  "    console.log('- Make signed API requests');",
+                  "    console.log('- Test signature verification');",
+                  "    console.log('');",
+                  "    console.log('⚠️  Remember: All API requests must include X-Signature header!');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{admin_access_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"public_key\": \"ssh-ed25519 AAAAC3... your@email.com\"\n}"
+            },
+            "url": "{{base_url}}/security/admin/upload-public-key"
+          }
+        },
+        {
+          "name": "Get Admin Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{admin_access_token}}"}
+            ],
+            "url": "{{base_url}}/security/admin/profile"
+          }
+        },
+        {
+          "name": "Test Signature Verification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{admin_access_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"test message\",\n  \"signature\": \"PASTE_SIGNATURE_HERE\"\n}"
+            },
+            "url": "{{base_url}}/security/admin/test-signature",
+            "description": "Sign 'test message' with your private key and paste signature here.\nCommand: echo -n 'test message' | openssl dgst -sha256 -sign ~/.ssh/id_ed25519 | base64 -w 0"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4️⃣ Health & Utilities",
+      "item": [
+        {
+          "name": "Root Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:8000/"
+          }
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:8000/health"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "if (jsonData.access_token) {",
+                  "    pm.collectionVariables.set('central_access_token', jsonData.access_token);",
+                  "    console.log('✅ Access token refreshed!');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": "{{base_url}}/auth/refresh"
+          }
+        }
+      ]
+    }
+  ]
+}
