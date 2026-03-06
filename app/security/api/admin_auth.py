@@ -42,7 +42,7 @@ async def admin_login(
     **Request:**
     - email: Admin email address
     - temporary_password: Password from invitation email
-    - invitation_hash: Hash from URL query parameter
+    - invitation_hash: (Optional) Hash from URL query parameter
 
     **Response:**
     - JWT access and refresh tokens
@@ -53,6 +53,7 @@ async def admin_login(
     - Temporary password is single-use
     - Invitation must not be expired or revoked
     - After login, admin must upload public key
+    - invitation_hash is optional for subsequent logins
     """
     try:
         # Verify credentials

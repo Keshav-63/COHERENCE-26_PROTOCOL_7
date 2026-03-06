@@ -101,7 +101,7 @@ class InvitationService:
     async def verify_login(
         email: str,
         temporary_password: str,
-        invitation_hash: str
+        invitation_hash: Optional[str] = None
     ) -> Optional[Invitation]:
         """
         Verify login credentials
@@ -109,16 +109,19 @@ class InvitationService:
         Args:
             email: User email
             temporary_password: Temporary password
-            invitation_hash: Invitation hash
+            invitation_hash: Invitation hash (optional)
 
         Returns:
             Invitation if valid, None otherwise
         """
-        # Get invitation
-        invitation = await Invitation.find_one(
-            Invitation.email == email,
-            Invitation.invitation_hash == invitation_hash
-        )
+        # Get invitation - with or without hash
+        if invitation_hash:
+            invitation = await Invitation.find_one(
+                Invitation.email == email,
+                Invitation.invitation_hash == invitation_hash
+            )
+        else:
+            invitation = await Invitation.find_one(Invitation.email == email)
 
         if not invitation:
             return None

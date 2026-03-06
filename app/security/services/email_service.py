@@ -8,8 +8,12 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import Optional
 from datetime import datetime
+import logging
 
 from app.core.config import settings
+
+# Setup logger
+logger = logging.getLogger(__name__)
 
 
 class EmailService:
@@ -22,6 +26,18 @@ class EmailService:
         self.smtp_password = settings.SMTP_PASSWORD
         self.from_email = settings.FROM_EMAIL or settings.SMTP_USER
         self.from_name = settings.FROM_NAME
+
+        # Log SMTP configuration (without password)
+        logger.info("="*80)
+        logger.info("EMAIL SERVICE CONFIGURATION")
+        logger.info("="*80)
+        logger.info(f"SMTP Host: {self.smtp_host}")
+        logger.info(f"SMTP Port: {self.smtp_port}")
+        logger.info(f"SMTP User: {self.smtp_user}")
+        logger.info(f"SMTP Password: {'*' * len(self.smtp_password) if self.smtp_password else 'NOT SET'}")
+        logger.info(f"From Email: {self.from_email}")
+        logger.info(f"From Name: {self.from_name}")
+        logger.info("="*80)
 
     async def send_invitation_email(
         self,
@@ -230,8 +246,16 @@ This is an automated email from the National Budget Intelligence Platform.
             True if sent successfully
         """
         try:
+            logger.info("="*80)
+            logger.info("SENDING EMAIL")
+            logger.info("="*80)
+            logger.info(f"To: {to_email}")
+            logger.info(f"Subject: {subject}")
+
             # If SMTP not configured, print to console (dev mode)
             if not self.smtp_user or not self.smtp_password:
+                logger.warning("SMTP NOT CONFIGURED - Running in DEV MODE")
+                logger.info("Email content will be printed to console")
                 print("\n" + "="*80)
                 print("📧 EMAIL (SMTP NOT CONFIGURED - DEV MODE)")
                 print("="*80)
@@ -241,6 +265,8 @@ This is an automated email from the National Budget Intelligence Platform.
                 print(text_content)
                 print("="*80 + "\n")
                 return True
+
+            logger.info("Creating email message...")
 
             # Create message
             message = MIMEMultipart('alternative')
@@ -254,20 +280,61 @@ This is an automated email from the National Budget Intelligence Platform.
             message.attach(part1)
             message.attach(part2)
 
+            logger.info(f"Connecting to SMTP server: {self.smtp_host}:{self.smtp_port}")
+            logger.info(f"Authenticating as: {self.smtp_user}")
+            logger.info("Using STARTTLS for secure connection")
+
+            # Remove spaces from password (Gmail app passwords sometimes have spaces)
+            clean_password = self.smtp_password.replace(' ', '')
+            logger.info(f"Password length: {len(clean_password)} characters")
+
             # Send email
             await aiosmtplib.send(
                 message,
                 hostname=self.smtp_host,
                 port=self.smtp_port,
                 username=self.smtp_user,
-                password=self.smtp_password,
+                password=clean_password,
                 start_tls=True
             )
 
+            logger.info("✅ Email sent successfully!")
+            logger.info("="*80)
             return True
 
+        except aiosmtplib.SMTPException as e:
+            logger.error("="*80)
+            logger.error("SMTP ERROR")
+            logger.error("="*80)
+            logger.error(f"Error Type: {type(e).__name__}")
+            logger.error(f"Error Message: {str(e)}")
+            logger.error(f"SMTP Host: {self.smtp_host}")
+            logger.error(f"SMTP Port: {self.smtp_port}")
+            logger.error(f"SMTP User: {self.smtp_user}")
+
+            if "535" in str(e) or "authentication" in str(e).lower():
+                logger.error("")
+                logger.error("🔴 AUTHENTICATION FAILED - Possible causes:")
+                logger.error("  1. Incorrect Gmail password or App Password")
+                logger.error("  2. Gmail 'Less secure app access' is disabled")
+                logger.error("  3. 2-Step Verification not enabled (required for App Passwords)")
+                logger.error("")
+                logger.error("📝 TO FIX:")
+                logger.error("  1. Enable 2-Step Verification on your Google Account")
+                logger.error("  2. Generate an App Password at: https://myaccount.google.com/apppasswords")
+                logger.error("  3. Use the App Password (16 characters) in .env file")
+                logger.error("  4. Update SMTP_PASSWORD in .env with the App Password")
+
+            logger.error("="*80)
+            return False
+
         except Exception as e:
-            print(f"Error sending email: {str(e)}")
+            logger.error("="*80)
+            logger.error("GENERAL ERROR SENDING EMAIL")
+            logger.error("="*80)
+            logger.error(f"Error Type: {type(e).__name__}")
+            logger.error(f"Error Message: {str(e)}")
+            logger.error("="*80)
             return False
 
 

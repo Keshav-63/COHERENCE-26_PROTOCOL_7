@@ -59,7 +59,7 @@ class InvitationLogin(BaseModel):
     """Schema for initial login with temporary password"""
     email: EmailStr
     temporary_password: str = Field(..., min_length=8)
-    invitation_hash: str = Field(..., description="Hash from invitation URL")
+    invitation_hash: Optional[str] = Field(None, description="Hash from invitation URL (optional for subsequent logins)")
 
 
 class PublicKeyUpload(BaseModel):

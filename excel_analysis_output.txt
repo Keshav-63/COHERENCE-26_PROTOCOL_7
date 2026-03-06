@@ -1,0 +1,143 @@
+
+================================================================================
+DEEP ANALYSIS: Sheet1
+================================================================================
+
+Total rows: 168
+Total columns: 13
+Non-null cells: 844 / 2184 (38.6%)
+
+First 20 rows (showing non-empty cells):
+Row 1: Col11: (i)
+Row 2: Col4: Budget Provisions, net of receipts and recoveries,
+Row 7: Col2: (In Rs. Crores)
+Row 8: Col6:  Budget Estimates2026-2027 
+Row 9: Col6: Revenue | Col7: Capital | Col9: Total | Col12: Page No
+Row 10: Col2: Ministry of Agriculture and Farmers Welfare | Col6: 140416.57 | Col7: 112.21 | Col9: 140528.78
+Row 11: Col2: 1.  | Col3: Department of Agriculture and Farmers Welfare | Col6: 130451.62 | Col7: 109.76 | Col9: 130561.38 | Col12: 1-6       
+Row 12: Col2: 2.  | Col3: Department of Agricultural Research and Education | Col6: 9964.95 | Col7: 2.45 | Col9: 9967.4 | Col12: 7-9       
+Row 13: Col2: Department of Atomic Energy | Col6: 14157.51 | Col7: 9966.41 | Col9: 24123.92
+Row 14: Col2: 3.  | Col3: Atomic Energy | Col6: 14157.51 | Col7: 9966.41 | Col9: 24123.92 | Col12: 10-15     
+Row 15: Col2: Ministry of AYUSH | Col6: 4381.86 | Col7: 27.07 | Col9: 4408.93
+Row 16: Col2: 4.  | Col3: Ministry of Ayush | Col6: 4381.86 | Col7: 27.07 | Col9: 4408.93 | Col12: 16-19     
+Row 17: Col2: Ministry of Chemicals and Fertilisers | Col6: 177049.76 | Col7: 11.71 | Col9: 177061.47
+Row 18: Col2: 5.  | Col3: Department of Chemicals and Petrochemicals | Col6: 184.7 | Col7: 1.02 | Col9: 185.72 | Col12: 20-21     
+Row 19: Col2: 6.  | Col3: Department of Fertilisers | Col6: 170935.64 | Col7: 8.89 | Col9: 170944.53 | Col12: 22-24     
+
+Rows with numerical data (first 10):
+  Row 10: Col6=140416.57, Col7=112.21, Col9=140528.78
+  Row 11: Col6=130451.62, Col7=109.76, Col9=130561.38
+  Row 12: Col6=9964.95, Col7=2.45, Col9=9967.4
+  Row 13: Col6=14157.51, Col7=9966.41, Col9=24123.92
+  Row 14: Col6=14157.51, Col7=9966.41, Col9=24123.92
+  Row 15: Col6=4381.86, Col7=27.07, Col9=4408.93
+  Row 16: Col6=4381.86, Col7=27.07, Col9=4408.93
+  Row 17: Col6=177049.76, Col7=11.71, Col9=177061.47
+  Row 18: Col6=184.7, Col7=1.02, Col9=185.72
+  Row 19: Col6=170935.64, Col7=8.89, Col9=170944.53
+
+================================================================================
+DEEP ANALYSIS: sbe1
+================================================================================
+
+Total rows: 118
+Total columns: 42
+Non-null cells: 1257 / 4956 (25.4%)
+
+First 20 rows (showing non-empty cells):
+Row 2: Col0: (ii) | Col9: Notes on Demands For Grants 2026-2027
+Row 5: Col2: Ministry of Agriculture and Farmers Welfare
+Demand
+Row 6: Col4: (In Rs. Crores)
+Row 7: Col15: Actuals 2024-2025 | Col21: Budget Estimates 2025-2026 | Col29: Revised Estimates 2025-2026 | Col35: Budget Estimates 2026-2027
+Row 8: Col15: Revenue | Col17: Capital | Col19: Total | Col21: Revenue | Col23: Capital | Col25: Total | Col29: Revenue | Col31: Capital | Col33: Total | Col35: Revenue | Col39: Capital | Col41: Total
+Row 9: Col11: Gross | Col15: 232078.02 | Col17: 75.19 | Col19: 232153.21 | Col21: 235044.56 | Col23: 87.87 | Col25: 235132.43 | Col29: 220003.13 | Col31: 86.17 | Col33: 220089.3 | Col35: 232451.62 | Col39: 109.76 | Col41: 232561.38
+Row 10: Col11: Recoveries | Col15: -102219.74 | Col17: ... | Col19: -102219.74 | Col21: -107842.27 | Col23: ... | Col25: -107842.27 | Col29: -97000 | Col31: ... | Col33: -97000 | Col35: -102000 | Col39: ... | Col41: -102000
+Row 11: Col11: Receipts | Col15: ... | Col17: ... | Col19: ... | Col21: ... | Col23: ... | Col25: ... | Col29: ... | Col31: ... | Col33: ... | Col35: ... | Col39: ... | Col41: ...
+Row 12: Col11: Net | Col15: 129858.28 | Col17: 75.19 | Col19: 129933.47 | Col21: 127202.29 | Col23: 87.87 | Col25: 127290.16 | Col29: 123003.13 | Col31: 86.17 | Col33: 123089.3 | Col35: 130451.62 | Col39: 109.76 | Col41: 130561.38
+Row 13: Col4: A. The Budget allocations, net of recoveries are g
+Row 14: Col4: CENTRE'S EXPENDITURE
+Row 15: Col4: Establishment Expenditure of the Centre
+Row 16: Col4: 1 . | Col6: Secretariat | Col19: 669.19 | Col25: 795.17 | Col33: 754.86
+Row 17: Col6: 1.01   | Col8: Secretariat | Col15: 196.12 | Col17: 14.68 | Col19: 210.8 | Col21: 263.49 | Col23: 14.73 | Col25: 278.22 | Col29: 208.18 | Col31: 15.44 | Col33: 223.62 | Col35: 223.63 | Col39: 12.74 | Col41: 236.37
+Row 18: Col6: 1.02   | Col8: Other Attached and Subordinate Offices | Col15: 397.88 | Col17: 60.51 | Col19: 458.39 | Col21: 443.81 | Col23: 73.14 | Col25: 516.95 | Col29: 460.51 | Col31: 70.73 | Col33: 531.24 | Col35: 447.67 | Col39: 97.02 | Col41: 544.69
+Row 19: Col6: Total - Secretariat | Col15: 594 | Col17: 75.19 | Col19: 669.19 | Col21: 707.3 | Col23: 87.87 | Col25: 795.17 | Col29: 668.69 | Col31: 86.17 | Col33: 754.86 | Col35: 671.3 | Col39: 109.76 | Col41: 781.06
+
+Rows with numerical data (first 10):
+  Row 9: Col15=232078.02, Col17=75.19, Col19=232153.21, Col21=235044.56, Col23=87.87
+  Row 10: Col15=-102219.74, Col19=-102219.74, Col21=-107842.27, Col25=-107842.27, Col29=-97000
+  Row 12: Col15=129858.28, Col17=75.19, Col19=129933.47, Col21=127202.29, Col23=87.87
+  Row 16: Col19=669.19, Col25=795.17, Col33=754.86
+  Row 17: Col15=196.12, Col17=14.68, Col19=210.8, Col21=263.49, Col23=14.73
+  Row 18: Col15=397.88, Col17=60.51, Col19=458.39, Col21=443.81, Col23=73.14
+  Row 19: Col15=594, Col17=75.19, Col19=669.19, Col21=707.3, Col23=87.87
+  Row 20: Col15=-0.68, Col17=0, Col19=-0.68, Col21=0, Col23=0
+  Row 21: Col15=-0.68, Col17=0, Col19=-0.68, Col21=0, Col23=0
+  Row 22: Col15=593.32, Col17=75.19, Col19=668.51, Col21=707.3, Col23=87.87
+
+================================================================================
+DEEP ANALYSIS: sbe2
+================================================================================
+
+Total rows: 55
+Total columns: 55
+Non-null cells: 499 / 3025 (16.5%)
+
+First 20 rows (showing non-empty cells):
+Row 1: Col48: (iii)
+Row 2: Col9: Notes on Demands For Grants 2026-2027
+Row 5: Col2: Ministry of Agriculture and Farmers Welfare
+Demand
+Row 6: Col4: (In Rs. Crores)
+Row 7: Col17: Actuals 2024-2025 | Col26: Budget Estimates 2025-2026 | Col37: Revised Estimates 2025-2026 | Col46: Budget Estimates 2026-2027
+Row 8: Col17: Revenue | Col20: Capital | Col23: Total | Col26: Revenue | Col29: Capital | Col32: Total | Col37: Revenue | Col40: Capital | Col43: Total | Col46: Revenue | Col51: Capital | Col54: Total
+Row 9: Col12: Gross | Col17: 10030.41 | Col20: 3.15 | Col23: 10033.56 | Col26: 10462.06 | Col29: 4.33 | Col32: 10466.39 | Col37: 10278.34 | Col40: 2.49 | Col43: 10280.83 | Col46: 9964.95 | Col51: 2.45 | Col54: 9967.4
+Row 10: Col12: Recoveries | Col17: -223.03 | Col20: ... | Col23: -223.03 | Col26: ... | Col29: ... | Col32: ... | Col37: ... | Col40: ... | Col43: ... | Col46: ... | Col51: ... | Col54: ...
+Row 11: Col12: Receipts | Col17: ... | Col20: ... | Col23: ... | Col26: ... | Col29: ... | Col32: ... | Col37: ... | Col40: ... | Col43: ... | Col46: ... | Col51: ... | Col54: ...
+Row 12: Col12: Net | Col17: 9807.38 | Col20: 3.15 | Col23: 9810.53 | Col26: 10462.06 | Col29: 4.33 | Col32: 10466.39 | Col37: 10278.34 | Col40: 2.49 | Col43: 10280.83 | Col46: 9964.95 | Col51: 2.45 | Col54: 9967.4
+Row 13: Col4: A. The Budget allocations, net of recoveries are g
+Row 14: Col4: CENTRE'S EXPENDITURE
+Row 15: Col4: Establishment Expenditure of the Centre
+Row 16: Col4: 1 . | Col6: Secretariat | Col17: 30.56 | Col20: 3.15 | Col23: 33.71 | Col26: 42.84 | Col29: 4.33 | Col32: 47.17 | Col37: 37.63 | Col40: 2.49 | Col43: 40.12 | Col46: 38.56 | Col51: 2.45 | Col54: 41.01
+Row 17: Col17: -0.16 | Col20: 0 | Col23: -0.16 | Col26: 0 | Col29: 0 | Col32: 0 | Col37: 0 | Col40: 0 | Col43: 0 | Col46: 0 | Col51: 0 | Col54: 0
+Row 18: Col12: Net | Col17: -0.16 | Col20: 0 | Col23: -0.16 | Col26: 0 | Col29: 0 | Col32: 0 | Col37: 0 | Col40: 0 | Col43: 0 | Col46: ...  | Col51: 0 | Col54: 0
+Row 19: Col4: Total - Establishment Expenditure of the Centre | Col17: 30.4 | Col20: 3.15 | Col23: 33.55 | Col26: 42.84 | Col29: 4.33 | Col32: 47.17 | Col37: 37.63 | Col40: 2.49 | Col43: 40.12 | Col46: 38.56 | Col51: 2.45 | Col54: 41.01
+
+Rows with numerical data (first 10):
+  Row 9: Col17=10030.41, Col20=3.15, Col23=10033.56, Col26=10462.06, Col29=4.33
+  Row 10: Col17=-223.03, Col23=-223.03
+  Row 12: Col17=9807.38, Col20=3.15, Col23=9810.53, Col26=10462.06, Col29=4.33
+  Row 16: Col17=30.56, Col20=3.15, Col23=33.71, Col26=42.84, Col29=4.33
+  Row 17: Col17=-0.16, Col20=0, Col23=-0.16, Col26=0, Col29=0
+  Row 18: Col17=-0.16, Col20=0, Col23=-0.16, Col26=0, Col29=0
+  Row 19: Col17=30.4, Col20=3.15, Col23=33.55, Col26=42.84, Col29=4.33
+  Row 21: Col17=234.73, Col20=0, Col23=234.73, Col26=204.23, Col29=0
+  Row 22: Col17=91.16, Col20=0, Col23=91.16, Col26=95.74, Col29=0
+  Row 23: Col17=247.85, Col20=0, Col23=247.85, Col26=229.09, Col29=0
+
+================================================================================
+SUMMARY - All Sheets
+================================================================================
+Total sheets: 103
+
+Sheet sizes (first 20):
+  Sheet1: 168 rows x 13 cols, 844 non-null cells
+  sbe1: 118 rows x 42 cols, 1257 non-null cells
+  sbe2: 55 rows x 55 cols, 499 non-null cells
+  sbe3: 118 rows x 55 cols, 1261 non-null cells
+  sbe4: 72 rows x 42 cols, 655 non-null cells
+  sbe5: 56 rows x 55 cols, 469 non-null cells
+  sbe6: 67 rows x 55 cols, 687 non-null cells
+  sbe7: 81 rows x 55 cols, 795 non-null cells
+  sbe8: 64 rows x 55 cols, 601 non-null cells
+  sbe9: 56 rows x 55 cols, 478 non-null cells
+  sbe10: 79 rows x 42 cols, 792 non-null cells
+  sbe11: 104 rows x 55 cols, 1081 non-null cells
+  sbe12: 48 rows x 55 cols, 440 non-null cells
+  sbe13: 118 rows x 55 cols, 1230 non-null cells
+  sbe14: 55 rows x 42 cols, 514 non-null cells
+  sbe15: 82 rows x 55 cols, 736 non-null cells
+  sbe16: 60 rows x 42 cols, 511 non-null cells
+  sbe17: 52 rows x 42 cols, 457 non-null cells
+  sbe18: 58 rows x 42 cols, 544 non-null cells
+  sbe19: 92 rows x 55 cols, 948 non-null cells

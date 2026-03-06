@@ -4,8 +4,8 @@ Request/Response validation and serialization schemas
 """
 
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
+from typing import Optional, Any
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator, field_serializer
 
 
 class UserBase(BaseModel):
@@ -51,6 +51,11 @@ class UserResponse(UserBase):
     role: str
     created_at: datetime
     last_login: Optional[datetime] = None
+
+    @field_serializer('id')
+    def serialize_id(self, value: Any) -> str:
+        """Convert ObjectId to string"""
+        return str(value)
 
     model_config = ConfigDict(from_attributes=True)
 

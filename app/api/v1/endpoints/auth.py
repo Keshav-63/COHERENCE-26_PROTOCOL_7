@@ -118,12 +118,16 @@ async def login(credentials: UserLogin) -> TokenResponse:
         data={"sub": str(user.id)}
     )
 
+    # Convert user to response format with id as string
+    user_dict = user.model_dump()
+    user_dict['id'] = str(user.id)
+
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
         token_type="bearer",
         expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        user=UserResponse.model_validate(user)
+        user=UserResponse.model_validate(user_dict)
     )
 
 
@@ -196,7 +200,10 @@ async def get_current_user_info(
     Returns:
         Current user information
     """
-    return UserResponse.model_validate(current_user)
+    # Convert user to response format with id as string
+    user_dict = current_user.model_dump()
+    user_dict['id'] = str(current_user.id)
+    return UserResponse.model_validate(user_dict)
 
 
 @router.post("/logout")

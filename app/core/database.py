@@ -50,10 +50,42 @@ async def connect_to_mongodb() -> None:
     # Initialize Beanie with document models
     from app.models.user import User
     from app.security.models import Invitation, AdminSession
+    from app.budget.models import (
+        Ministry,
+        Department,
+        Scheme,
+        SubScheme,
+        BudgetAllocation,
+        Expenditure,
+        Vendor,
+        Contract,
+        State,
+        District,
+        Location,
+    )
 
     await init_beanie(
         database=mongodb_database,
-        document_models=[User, Invitation, AdminSession]
+        document_models=[
+            # User and Security Models
+            User,
+            Invitation,
+            AdminSession,
+            # Budget Models
+            Ministry,
+            Department,
+            Scheme,
+            SubScheme,
+            BudgetAllocation,
+            Expenditure,
+            # Vendor and Contract Models
+            Vendor,
+            Contract,
+            # Location Models
+            State,
+            District,
+            Location,
+        ]
     )
 
     print(f"Connected to MongoDB: {settings.DATABASE_NAME}")
