@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   Menu, X, Home, Key, BarChart3, AlertTriangle, TrendingUp, 
-  LogOut, Building2, Settings, ShieldCheck, Zap
+  LogOut, Building2, Settings, ShieldCheck, Zap, Shield
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { showSuccess } from '../utils/utils'
@@ -11,11 +11,14 @@ const Navigation = ({ role = 'admin' }) => {
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
-  const { user, logout } = useAuth()
+  const { user, admin, logout, adminLogout } = useAuth()
+  
+  const currentUser = user || admin
 
   const adminLinks = [
     { path: '/admin/dashboard', label: 'Command Center', icon: Home },
     { path: '/admin/analytics-dashboard', label: 'Analytics Hub', icon: Zap },
+    { path: '/admin/intelligence', label: 'PRAHARI Intelligence', icon: Shield },
     { path: '/admin/key-management', label: 'Access Control', icon: Key },
     { path: '/admin/budget-analytics', label: 'Fiscal Analytics', icon: BarChart3 },
     { path: '/admin/risk-anomalies', label: 'Threat Detection', icon: AlertTriangle },
@@ -25,6 +28,7 @@ const Navigation = ({ role = 'admin' }) => {
   const employeeLinks = [
     { path: '/employee/dashboard', label: 'State Dashboard', icon: Home },
     { path: '/employee/analytics-dashboard', label: 'Analytics Hub', icon: Zap },
+    { path: '/employee/intelligence', label: 'Intelligence Reports', icon: Shield },
     { path: '/employee/key-generation', label: 'Security Setup', icon: Key },
     { path: '/employee/budget-analytics', label: 'My Allocations', icon: BarChart3 },
     { path: '/employee/risk-anomalies', label: 'Report Logs', icon: AlertTriangle },
@@ -34,7 +38,11 @@ const Navigation = ({ role = 'admin' }) => {
   const links = role === 'admin' ? adminLinks : employeeLinks
 
   const handleLogout = () => {
-    logout()
+    if (admin) {
+      adminLogout()
+    } else {
+      logout()
+    }
     showSuccess('Secure session terminated')
     navigate('/login')
   }
@@ -60,7 +68,7 @@ const Navigation = ({ role = 'admin' }) => {
         </div>
 
         {/* User Profile Card */}
-        {user && (
+        {currentUser && (
           <div className="p-4 mx-4 mt-6 bg-blue-900/30 rounded-2xl border border-blue-800/50 flex items-center gap-3 hover:bg-blue-900/50 transition-colors cursor-default shadow-inner">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center border-2 border-blue-400/30 flex-shrink-0 shadow-lg">
               <span className="text-white font-bold text-sm">
@@ -69,7 +77,7 @@ const Navigation = ({ role = 'admin' }) => {
             </div>
             <div className="overflow-hidden">
               <p className="text-[11px] text-blue-300 font-medium mb-0.5 uppercase tracking-wider">Active Session</p>
-              <p className="font-semibold text-sm text-white truncate">{user.email || 'Official User'}</p>
+              <p className="font-semibold text-sm text-white truncate">{currentUser.email || 'Official User'}</p>
               <div className="flex items-center gap-1.5 mt-1">
                 <ShieldCheck size={12} className="text-emerald-400" />
                 <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">{role}</p>
