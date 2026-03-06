@@ -63,6 +63,7 @@ async def connect_to_mongodb() -> None:
         District,
         Location,
     )
+    from app.intelligence.models import AnomalyFlag, RiskScore, BudgetTransaction
 
     await init_beanie(
         database=mongodb_database,
@@ -85,6 +86,10 @@ async def connect_to_mongodb() -> None:
             State,
             District,
             Location,
+            # PRAHARI Intelligence Models
+            BudgetTransaction,
+            AnomalyFlag,
+            RiskScore,
         ]
     )
 

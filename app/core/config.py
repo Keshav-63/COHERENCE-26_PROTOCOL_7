@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     FROM_EMAIL: Optional[str] = Field(default=None, description="Sender email address")
     FROM_NAME: Optional[str] = Field(default="Budget Intelligence Platform", description="Sender display name")
 
+    # PRAHARI — Gemini AI Intelligence Engine
+    GEMINI_API_KEY: Optional[str] = Field(default=None, description="Google Gemini API key for AI narratives")
+
     # Frontend
     FRONTEND_URL: str = "http://localhost:3000"
     ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
