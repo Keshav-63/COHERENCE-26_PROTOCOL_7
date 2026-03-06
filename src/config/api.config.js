@@ -6,7 +6,7 @@
 // API Base URLs - easily configurable per environment
 export const API_CONFIG = {
   // Base URL for the API - change this based on environment
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://api.budgetintelligence.gov.in',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
 
   // API version
   API_VERSION: 'v1',
