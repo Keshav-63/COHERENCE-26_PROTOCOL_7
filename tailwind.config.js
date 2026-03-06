@@ -7,12 +7,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        // Sets Inter as the default for the whole UI
-        sans: ['Inter', 'sans-serif'],
-        // Sets Calistoga for headings/display text
-        display: ['Calistoga', 'cursive'],
-        // Sets JetBrains Mono for tech accents/badges
-        mono: ['JetBrains Mono', 'monospace'],
+        // Keep one clean type system across the UI
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       colors: {
         // Primary Electric Blue
@@ -49,10 +47,6 @@ export default {
           orange: '#f97316',
           red: '#ef4444',
         },
-      },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Calistoga', 'serif'],
       },
       fontSize: {
         xs: ['12px', { lineHeight: '16px' }],
