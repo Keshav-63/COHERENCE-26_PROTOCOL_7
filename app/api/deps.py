@@ -88,3 +88,26 @@ async def get_current_active_user(
             detail="User account is inactive"
         )
     return current_user
+
+
+async def get_central_admin(
+    current_user: User = Depends(get_current_user)
+) -> User:
+    """
+    Dependency to verify current user is a central admin
+
+    Args:
+        current_user: Current authenticated user
+
+    Returns:
+        Central admin User object
+
+    Raises:
+        HTTPException: If user is not a central admin
+    """
+    if current_user.role != "central_admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only central administrators can access this resource"
+        )
+    return current_user

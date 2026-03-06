@@ -1,6 +1,6 @@
 """
 Main FastAPI Application
-Entry point for the Coherence OAuth2 API
+Entry point for the Budget Intelligence Platform API
 """
 
 import logging
@@ -51,7 +51,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description="Production-ready FastAPI application with Google OAuth2 authentication",
+    description="National Budget Flow Intelligence & Leakage Detection Platform with Multi-Tenancy Security",
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
     openapi_url="/openapi.json" if settings.DEBUG else None,
@@ -71,7 +71,7 @@ async def root():
     """Root endpoint - API health check"""
     return JSONResponse(
         content={
-            "message": "Welcome to Coherence OAuth2 API",
+            "message": "Welcome to Budget Intelligence Platform API",
             "version": settings.APP_VERSION,
             "status": "healthy",
             "docs": "/docs" if settings.DEBUG else "Documentation disabled in production"

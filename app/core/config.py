@@ -3,7 +3,7 @@ Application Configuration
 Loads and validates environment variables using Pydantic Settings
 """
 
-from typing import List
+from typing import List, Optional
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -31,10 +31,13 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
-    # Google OAuth2
-    GOOGLE_CLIENT_ID: str = Field(..., description="Google OAuth2 Client ID")
-    GOOGLE_CLIENT_SECRET: str = Field(..., description="Google OAuth2 Client Secret")
-    GOOGLE_REDIRECT_URI: str = Field(..., description="Google OAuth2 Redirect URI")
+    # Email Configuration (SMTP) - Optional for invitation emails
+    SMTP_HOST: Optional[str] = Field(default="smtp.gmail.com", description="SMTP server hostname")
+    SMTP_PORT: Optional[int] = Field(default=587, description="SMTP server port")
+    SMTP_USER: Optional[str] = Field(default=None, description="SMTP username (email)")
+    SMTP_PASSWORD: Optional[str] = Field(default=None, description="SMTP password or app password")
+    FROM_EMAIL: Optional[str] = Field(default=None, description="Sender email address")
+    FROM_NAME: Optional[str] = Field(default="Budget Intelligence Platform", description="Sender display name")
 
     # Frontend
     FRONTEND_URL: str = "http://localhost:3000"

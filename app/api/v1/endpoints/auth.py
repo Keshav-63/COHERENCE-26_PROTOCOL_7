@@ -1,21 +1,20 @@
 """
 Authentication Endpoints
-Google OAuth2 authentication routes for frontend integration
+Email/Password authentication routes for frontend integration
 """
 
-from datetime import timedelta
 from typing import Dict, Any
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.config import settings
 from app.core.security import create_access_token, create_refresh_token, verify_token
 from app.schemas.user import (
-    GoogleAuthRequest,
+    UserRegister,
+    UserLogin,
     TokenResponse,
     UserResponse,
     RefreshTokenRequest
 )
-from app.services.oauth import google_oauth_service
 from app.services.user import user_service
 from app.api.deps import get_current_user
 from app.models.user import User
@@ -23,72 +22,38 @@ from app.models.user import User
 router = APIRouter()
 
 
-@router.get("/google/login")
-async def google_login(
-    redirect_uri: str = Query(None, description="Optional redirect URI override")
-) -> Dict[str, str]:
+@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+async def register(user_data: UserRegister) -> TokenResponse:
     """
-    Generate Google OAuth2 login URL
+    Register a new user with email and password
 
     **Frontend Integration:**
-    1. Call this endpoint to get the authorization URL
-    2. Redirect user to the returned URL
-    3. User will authenticate with Google
-    4. Google will redirect back to your callback endpoint
-
-    Returns:
-        Dictionary containing authorization_url
-    """
-    auth_url = google_oauth_service.get_authorization_url()
-
-    return {
-        "authorization_url": auth_url,
-        "message": "Redirect user to this URL for Google authentication"
-    }
-
-
-@router.post("/google/callback", response_model=TokenResponse)
-async def google_callback(
-    auth_request: GoogleAuthRequest
-) -> TokenResponse:
-    """
-    Handle Google OAuth2 callback and exchange code for tokens
-
-    **Frontend Integration:**
-    1. After Google redirects back, extract the 'code' from URL query params
-    2. Send the code to this endpoint
+    1. Collect user email, password, and optional full name
+    2. Send registration request to this endpoint
     3. Receive access_token, refresh_token, and user data
     4. Store tokens securely (httpOnly cookies recommended)
 
     Args:
-        auth_request: Contains authorization code from Google
+        user_data: User registration data (email, password, full_name)
 
     Returns:
         JWT tokens and user information
     """
+    # Check if user already exists
+    existing_user = await user_service.get_user_by_email(user_data.email)
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+
+    # Create new user
     try:
-        # Exchange authorization code for Google tokens
-        token_data = await google_oauth_service.exchange_code_for_token(
-            code=auth_request.code,
-            redirect_uri=auth_request.redirect_uri
-        )
-
-        # Get user info from Google
-        google_user = await google_oauth_service.get_user_info(
-            access_token=token_data["access_token"]
-        )
-
-        # Get or create user in database
-        user, is_new = await user_service.get_or_create_user(
-            google_id=google_user.sub,
-            email=google_user.email,
-            full_name=google_user.name,
-            profile_picture=google_user.picture
-        )
+        user = await user_service.register_user(user_data)
 
         # Create JWT tokens
         access_token = create_access_token(
-            data={"sub": str(user.id), "email": user.email}
+            data={"sub": str(user.id), "email": user.email, "role": user.role}
         )
         refresh_token = create_refresh_token(
             data={"sub": str(user.id)}
@@ -104,9 +69,62 @@ async def google_callback(
 
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Authentication failed: {str(e)}"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Registration failed: {str(e)}"
         )
+
+
+@router.post("/login", response_model=TokenResponse)
+async def login(credentials: UserLogin) -> TokenResponse:
+    """
+    Login with email and password
+
+    **Frontend Integration:**
+    1. Collect user email and password
+    2. Send login request to this endpoint
+    3. Receive access_token, refresh_token, and user data
+    4. Store tokens securely (httpOnly cookies recommended)
+
+    Args:
+        credentials: User login credentials (email, password)
+
+    Returns:
+        JWT tokens and user information
+    """
+    # Authenticate user
+    user = await user_service.authenticate_user(
+        email=credentials.email,
+        password=credentials.password
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is inactive"
+        )
+
+    # Create JWT tokens
+    access_token = create_access_token(
+        data={"sub": str(user.id), "email": user.email, "role": user.role}
+    )
+    refresh_token = create_refresh_token(
+        data={"sub": str(user.id)}
+    )
+
+    return TokenResponse(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="bearer",
+        expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        user=UserResponse.model_validate(user)
+    )
 
 
 @router.post("/refresh", response_model=Dict[str, Any])
@@ -153,7 +171,7 @@ async def refresh_access_token(
 
     # Create new access token
     access_token = create_access_token(
-        data={"sub": str(user.id), "email": user.email}
+        data={"sub": str(user.id), "email": user.email, "role": user.role}
     )
 
     return {

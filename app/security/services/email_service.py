@@ -16,12 +16,12 @@ class EmailService:
     """Service for sending emails"""
 
     def __init__(self):
-        self.smtp_host = getattr(settings, 'SMTP_HOST', 'smtp.gmail.com')
-        self.smtp_port = getattr(settings, 'SMTP_PORT', 587)
-        self.smtp_user = getattr(settings, 'SMTP_USER', None)
-        self.smtp_password = getattr(settings, 'SMTP_PASSWORD', None)
-        self.from_email = getattr(settings, 'FROM_EMAIL', self.smtp_user)
-        self.from_name = getattr(settings, 'FROM_NAME', 'Budget Intelligence Platform')
+        self.smtp_host = settings.SMTP_HOST
+        self.smtp_port = settings.SMTP_PORT
+        self.smtp_user = settings.SMTP_USER
+        self.smtp_password = settings.SMTP_PASSWORD
+        self.from_email = settings.FROM_EMAIL or settings.SMTP_USER
+        self.from_name = settings.FROM_NAME
 
     async def send_invitation_email(
         self,
@@ -51,6 +51,7 @@ class EmailService:
             subject = f"Invitation to Budget Intelligence Platform - {tenant_name}"
 
             html_content = self._create_invitation_html(
+                to_email=to_email,
                 tenant_name=tenant_name,
                 tenant_type=tenant_type,
                 dashboard_url=dashboard_url,
@@ -59,6 +60,7 @@ class EmailService:
             )
 
             text_content = self._create_invitation_text(
+                to_email=to_email,
                 tenant_name=tenant_name,
                 tenant_type=tenant_type,
                 dashboard_url=dashboard_url,
@@ -80,6 +82,7 @@ class EmailService:
 
     def _create_invitation_html(
         self,
+        to_email: str,
         tenant_name: str,
         tenant_type: str,
         dashboard_url: str,
@@ -162,6 +165,7 @@ class EmailService:
 
     def _create_invitation_text(
         self,
+        to_email: str,
         tenant_name: str,
         tenant_type: str,
         dashboard_url: str,

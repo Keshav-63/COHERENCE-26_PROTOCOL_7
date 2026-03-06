@@ -13,16 +13,16 @@ class User(Document):
     """User document model for storing user authentication data in MongoDB"""
 
     email: Indexed(EmailStr, unique=True)
+    hashed_password: str
     full_name: Optional[str] = None
     profile_picture: Optional[str] = None
-
-    # OAuth specific fields
-    google_id: Indexed(str, unique=True, sparse=True) = None
-    oauth_provider: str = "google"
 
     # Account status
     is_active: bool = True
     is_verified: bool = False
+
+    # Role for central admin identification
+    role: str = "user"  # "user" or "central_admin"
 
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -39,16 +39,15 @@ class User(Document):
             "example": {
                 "email": "user@example.com",
                 "full_name": "John Doe",
-                "profile_picture": "https://example.com/avatar.jpg",
-                "google_id": "1234567890",
-                "oauth_provider": "google",
+                "hashed_password": "$2b$12$...",
                 "is_active": True,
-                "is_verified": True
+                "is_verified": True,
+                "role": "user"
             }
         }
 
     def __repr__(self) -> str:
-        return f"<User(id={self.id}, email='{self.email}', provider='{self.oauth_provider}')>"
+        return f"<User(id={self.id}, email='{self.email}', role='{self.role}')>"
 
     def __str__(self) -> str:
         return self.email

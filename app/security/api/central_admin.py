@@ -14,7 +14,7 @@ from app.security.schemas import (
 )
 from app.security.services import invitation_service
 from app.security.models import InvitationStatus, TenantType
-from app.api.deps import get_current_user
+from app.api.deps import get_central_admin
 from app.models.user import User
 from app.core.config import settings
 
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/central/invitations", tags=["Central Admin - Invitat
 @router.post("/", response_model=InvitationResponse, status_code=status.HTTP_201_CREATED)
 async def create_invitation(
     invitation_data: InvitationCreate,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_central_admin)
 ) -> InvitationResponse:
     """
     Create and send invitation to state/minister admin
@@ -92,7 +92,7 @@ async def list_invitations(
     tenant_type: TenantType = Query(None, description="Filter by tenant type"),
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(100, ge=1, le=500, description="Maximum records to return"),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_central_admin)
 ) -> List[InvitationListResponse]:
     """
     List all invitations with optional filters
@@ -136,7 +136,7 @@ async def list_invitations(
 
 @router.get("/stats", response_model=InvitationStats)
 async def get_invitation_stats(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_central_admin)
 ) -> InvitationStats:
     """
     Get invitation statistics
@@ -160,7 +160,7 @@ async def get_invitation_stats(
 @router.get("/{invitation_id}", response_model=InvitationResponse)
 async def get_invitation_details(
     invitation_id: str,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_central_admin)
 ) -> InvitationResponse:
     """
     Get detailed information about a specific invitation
@@ -216,7 +216,7 @@ async def get_invitation_details(
 @router.post("/{invitation_id}/revoke", response_model=Dict[str, Any])
 async def revoke_invitation(
     invitation_id: str,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_central_admin)
 ) -> Dict[str, Any]:
     """
     Revoke an invitation
@@ -254,7 +254,7 @@ async def revoke_invitation(
 
 @router.post("/cleanup-expired", response_model=Dict[str, Any])
 async def cleanup_expired_invitations(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_central_admin)
 ) -> Dict[str, Any]:
     """
     Mark all expired invitations as 'expired'
