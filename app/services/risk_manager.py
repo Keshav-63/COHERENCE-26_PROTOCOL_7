@@ -95,7 +95,7 @@ class AegisWatcher:
                 tx['timestamp'] = datetime.utcnow()
 
         # --- 1. SALAMI SLICING (Structuring) ---
-        # Search through the local JSON list (db.data)
+        # Search through the local JSON  list (db.data)
         window_start = tx['timestamp'] - timedelta(days=3)
         salami_hits = [
             d for d in db.data 
