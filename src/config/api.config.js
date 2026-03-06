@@ -74,6 +74,11 @@ export const ENDPOINTS = {
     FISCAL_FLOW_GRAPH: 'intelligence/fiscal-flow-graph',
   },
 
+  // Predictive Modeling endpoints
+  PREDICTIVE_MODELING: {
+    SCHEMES: 'predictive-modeling/schemes',
+  },
+
   // Health check
   HEALTH: 'health',
   ROOT: '',
