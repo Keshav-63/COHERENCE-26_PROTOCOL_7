@@ -31,4 +31,29 @@ class FeedbackDatabase {
     );
     return snaps.map((snap) => CitizenFeedback.fromMap(snap.value)).toList();
   }
+
+  Future<List<CitizenFeedback>> byArea({
+    required String district,
+    required String areaDescription,
+    String? areaId,
+  }) async {
+    final filters = <Filter>[
+      Filter.equals('district', district),
+      Filter.equals('areaDescription', areaDescription),
+    ];
+
+    if (areaId != null && areaId.isNotEmpty) {
+      filters.add(Filter.equals('areaId', areaId));
+    }
+
+    final snaps = await _store.find(
+      _db,
+      finder: Finder(
+        filter: Filter.and(filters),
+        sortOrders: [SortOrder('createdAt', false)],
+      ),
+    );
+
+    return snaps.map((snap) => CitizenFeedback.fromMap(snap.value)).toList();
+  }
 }

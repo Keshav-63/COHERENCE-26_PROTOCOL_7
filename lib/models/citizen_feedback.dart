@@ -16,6 +16,7 @@ class CitizenFeedback {
     required this.citizenName,
     required this.district,
     required this.department,
+    this.areaId = '',
     required this.areaDescription,
     required this.details,
     required this.rating,
@@ -23,12 +24,15 @@ class CitizenFeedback {
     required this.statusNote,
     required this.createdAt,
     this.imageBytes,
+    this.latitude,
+    this.longitude,
   });
 
   final int id;
   final String citizenName;
   final String district;
   final String department;
+  final String areaId;
   final String areaDescription;
   final String details;
   final int rating;
@@ -36,6 +40,8 @@ class CitizenFeedback {
   final String statusNote;
   final DateTime createdAt;
   final Uint8List? imageBytes;
+  final double? latitude;
+  final double? longitude;
 
   CitizenFeedback copyWith({CitizenActionStatus? actionStatus}) {
     return CitizenFeedback(
@@ -43,6 +49,7 @@ class CitizenFeedback {
       citizenName: citizenName,
       district: district,
       department: department,
+      areaId: areaId,
       areaDescription: areaDescription,
       details: details,
       rating: rating,
@@ -50,6 +57,8 @@ class CitizenFeedback {
       statusNote: statusNote,
       createdAt: createdAt,
       imageBytes: imageBytes,
+      latitude: latitude,
+      longitude: longitude,
     );
   }
 
@@ -59,6 +68,7 @@ class CitizenFeedback {
       'citizenName': citizenName,
       'district': district,
       'department': department,
+      'areaId': areaId,
       'areaDescription': areaDescription,
       'details': details,
       'rating': rating,
@@ -66,6 +76,8 @@ class CitizenFeedback {
       'statusNote': statusNote,
       'createdAt': createdAt.toIso8601String(),
       'imageBytes': imageBytes,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 
@@ -75,6 +87,7 @@ class CitizenFeedback {
       citizenName: map['citizenName'] as String,
       district: map['district'] as String,
       department: map['department'] as String,
+      areaId: map['areaId'] as String? ?? '',
       areaDescription: map['areaDescription'] as String,
       details: map['details'] as String,
       rating: map['rating'] as int? ?? 0,
@@ -85,6 +98,8 @@ class CitizenFeedback {
       statusNote: map['statusNote'] as String? ?? '',
       createdAt: DateTime.parse(map['createdAt'] as String),
       imageBytes: map['imageBytes'] as Uint8List?,
+      latitude: (map['latitude'] as num?)?.toDouble(),
+      longitude: (map['longitude'] as num?)?.toDouble(),
     );
   }
 }
