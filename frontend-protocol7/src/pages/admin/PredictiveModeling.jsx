@@ -6,10 +6,16 @@ import Navigation from '../../components/Navigation'
 import Badge from '../../components/Badge'
 import { formatCurrency } from '../../utils/utils'
 import { PREDICTIVE_MODELS, RISK_FORECAST } from '../../utils/mockData'
+import { useAuth } from '../../context/AuthContext'
 
 const PredictiveModeling = () => {
+  const { user, admin } = useAuth()
   const [selectedModel, setSelectedModel] = useState('budget')
   const [activeState, setActiveState] = useState('all')
+
+  // Determine user role for navigation
+  const currentUser = user || admin
+  const userRole = currentUser?.role || 'admin'
 
   // Prepare chart data
   const budgetForecastData = PREDICTIVE_MODELS.map((item) => ({
@@ -41,7 +47,7 @@ const PredictiveModeling = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <Navigation role="admin" />
+      <Navigation role={userRole} />
 
       <main className="md:ml-64 pt-20 md:pt-0">
         {/* Header */}

@@ -10,6 +10,7 @@ import PublicKeyUpload from './pages/admin/PublicKeyUpload'
 import BudgetAnalytics from './pages/admin/BudgetAnalytics'
 import RiskAnomalies from './pages/admin/RiskAnomalies'
 import PredictiveModeling from './pages/admin/PredictiveModeling'
+import IntelligenceDashboard from './pages/admin/IntelligenceDashboard'
 import EmployeeHome from './pages/employee/EmployeeHome'
 import KeyGeneration from './pages/employee/KeyGeneration'
 
@@ -113,6 +114,14 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/admin/intelligence"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <IntelligenceDashboard />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Employee Routes */}
       <Route
@@ -152,6 +161,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute requiredRole="employee">
             <PredictiveModeling />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employee/intelligence"
+        element={
+          <ProtectedRoute requiredRole="employee">
+            <IntelligenceDashboard />
           </ProtectedRoute>
         }
       />

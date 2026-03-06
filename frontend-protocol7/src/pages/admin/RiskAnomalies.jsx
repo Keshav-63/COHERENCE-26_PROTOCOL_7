@@ -7,11 +7,17 @@ import Button from '../../components/Button'
 import Modal from '../../components/Modal'
 import { formatCurrency, getAnomalySeverityBadgeColor, showSuccess } from '../../utils/utils'
 import { ANOMALIES } from '../../utils/mockData'
+import { useAuth } from '../../context/AuthContext'
 
 const RiskAnomalies = () => {
+  const { user, admin } = useAuth()
   const [anomalies, setAnomalies] = useState(ANOMALIES)
   const [selectedAnomaly, setSelectedAnomaly] = useState(null)
   const [filterSeverity, setFilterSeverity] = useState('all')
+
+  // Determine user role for navigation
+  const currentUser = user || admin
+  const userRole = currentUser?.role || 'admin'
 
   const filteredAnomalies = filterSeverity === 'all'
     ? anomalies
@@ -58,7 +64,7 @@ const RiskAnomalies = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <Navigation role="admin" />
+      <Navigation role={userRole} />
 
       <main className="md:ml-64 pt-20 md:pt-0">
         {/* Header */}

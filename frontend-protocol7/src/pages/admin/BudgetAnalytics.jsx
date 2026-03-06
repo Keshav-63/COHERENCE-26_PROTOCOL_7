@@ -7,12 +7,18 @@ import Button from '../../components/Button'
 import Badge from '../../components/Badge'
 import { formatCurrency, formatPercentage } from '../../utils/utils'
 import { BUDGET_DATA } from '../../utils/mockData'
+import { useAuth } from '../../context/AuthContext'
 
 const COLORS = ['#0052FF', '#4D7CFF', '#00d9ff', '#10b981', '#f97316']
 
 const BudgetAnalytics = () => {
+  const { user, admin } = useAuth()
   const [activeTab, setActiveTab] = useState('statewise')
   const [selectedState, setSelectedState] = useState(null)
+
+  // Determine user role for navigation
+  const currentUser = user || admin
+  const userRole = currentUser?.role || 'admin'
 
   const tabs = [
     { id: 'statewise', label: 'State-wise Analysis' },
@@ -222,7 +228,7 @@ const BudgetAnalytics = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <Navigation role="admin" />
+      <Navigation role={userRole} />
 
       <main className="md:ml-64 pt-20 md:pt-0">
         {/* Header */}

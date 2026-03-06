@@ -24,31 +24,44 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Load user/admin from localStorage on mount
     const initAuth = async () => {
+      console.log('🔄 AuthContext: Initializing auth...')
+      console.log('🔍 Checking localStorage...')
+      console.log('  - access_token:', localStorage.getItem('access_token') ? 'EXISTS' : 'MISSING')
+      console.log('  - admin:', localStorage.getItem('admin') ? 'EXISTS' : 'MISSING')
+      console.log('  - user:', localStorage.getItem('user') ? 'EXISTS' : 'MISSING')
+
       try {
         // Check if user is authenticated
-        if (checkAuth()) {
+        const hasToken = checkAuth()
+        console.log('🔐 checkAuth() result:', hasToken)
+
+        if (hasToken) {
           // Try to get current user from API
           const storedUser = getStoredUser()
           const storedAdmin = getStoredAdmin()
 
+          console.log('📦 Retrieved from localStorage:')
+          console.log('  - storedUser:', storedUser ? 'FOUND' : 'NULL')
+          console.log('  - storedAdmin:', storedAdmin ? 'FOUND' : 'NULL')
+
           if (storedUser) {
-            console.log('🔄 Restoring user from localStorage:', storedUser)
+            console.log('✅ Restoring USER from localStorage:', storedUser)
             setUser(storedUser)
             setIsAuthenticated(true)
-            // Optionally refresh user data from API (non-blocking)
-            // Skip refresh to avoid CORS/500 errors on initial load
-            // User data will be refreshed on next API call
+            console.log('✅ User restored, isAuthenticated set to TRUE')
           } else if (storedAdmin) {
-            console.log('🔄 Restoring admin from localStorage:', {
+            console.log('✅ Restoring ADMIN from localStorage:', {
               email: storedAdmin.email,
               role: storedAdmin.role,
               backendRole: storedAdmin.backendRole,
-              tenant_type: storedAdmin.tenant_type
+              tenant_type: storedAdmin.tenant_type,
+              tenant_code: storedAdmin.tenant_code
             })
             setAdmin(storedAdmin)
             setIsAuthenticated(true)
-            // Optionally refresh admin data from API (non-blocking)
-            // Skip refresh to avoid CORS/500 errors on initial load
+            console.log('✅ Admin restored, isAuthenticated set to TRUE')
+          } else {
+            console.warn('⚠️ Token exists but no user/admin data found in localStorage!')
           }
         } else {
           console.log('⚠️ No authentication token found')
@@ -56,6 +69,7 @@ export const AuthProvider = ({ children }) => {
       } catch (error) {
         console.error('❌ Auth initialization error:', error)
       } finally {
+        console.log('🏁 Auth initialization complete, setting loading to FALSE')
         setLoading(false)
       }
     }
@@ -127,6 +141,11 @@ export const AuthProvider = ({ children }) => {
 
       console.log('✅ Admin data stored in localStorage with role:', frontendRole)
       console.log('💾 Stored admin data:', adminData)
+
+      // Verify it was actually saved
+      const verification = localStorage.getItem('admin')
+      console.log('🔍 Verification - localStorage.admin:', verification ? JSON.parse(verification) : 'NOT FOUND')
+      console.log('🔍 Verification - has role:', verification ? JSON.parse(verification).role : 'N/A')
 
       // Return response with mapped role
       return {

@@ -61,6 +61,19 @@ export const ENDPOINTS = {
     },
   },
 
+  // PRAHARI Intelligence endpoints
+  INTELLIGENCE: {
+    AUDIT: 'intelligence/audit',
+    ANOMALIES: 'intelligence/anomalies',
+    PHANTOM_UTILIZATION: (entityCode) => `intelligence/phantom-utilization/${entityCode}`,
+    MARCH_RUSH: 'intelligence/march-rush',
+    VENDOR_INTELLIGENCE: 'intelligence/vendor-intelligence',
+    REALLOCATION_ENGINE: 'intelligence/reallocation-engine',
+    DASHBOARD: 'intelligence/dashboard',
+    LEAKAGE_RISKS: 'intelligence/leakage-risks',
+    FISCAL_FLOW_GRAPH: 'intelligence/fiscal-flow-graph',
+  },
+
   // Health check
   HEALTH: 'health',
   ROOT: '',
