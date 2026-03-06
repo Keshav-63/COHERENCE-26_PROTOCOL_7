@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import Login from './pages/auth/Login'
 import AdminHome from './pages/admin/AdminHome'
 import KeyManagement from './pages/admin/KeyManagement'
+import PublicKeyUpload from './pages/admin/PublicKeyUpload'
 import BudgetAnalytics from './pages/admin/BudgetAnalytics'
 import RiskAnomalies from './pages/admin/RiskAnomalies'
 import PredictiveModeling from './pages/admin/PredictiveModeling'
@@ -14,7 +15,7 @@ import KeyGeneration from './pages/employee/KeyGeneration'
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
-  const { isAuthenticated, user, loading } = useAuth()
+  const { isAuthenticated, user, admin, loading } = useAuth()
 
   if (loading) {
     return (
@@ -28,11 +29,36 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   }
 
   if (!isAuthenticated) {
+    console.log('🚫 ProtectedRoute: Not authenticated, redirecting to login')
     return <Navigate to="/login" replace />
   }
 
-  if (requiredRole && user?.role !== requiredRole) {
-    return <Navigate to="/login" replace />
+  // Check role if required
+  if (requiredRole) {
+    const currentUser = user || admin
+    const userRole = currentUser?.role
+
+    console.log('🔒 ProtectedRoute check:', {
+      requiredRole,
+      userRole,
+      backendRole: currentUser?.backendRole,
+      isAuthenticated,
+      hasUser: !!user,
+      hasAdmin: !!admin,
+      currentUser: currentUser ? {
+        email: currentUser.email,
+        role: currentUser.role,
+        tenant_type: currentUser.tenant_type
+      } : null
+    })
+
+    // Check if role matches
+    if (userRole !== requiredRole) {
+      console.warn(`🚫 Access denied: required "${requiredRole}", user has "${userRole}"`)
+      return <Navigate to="/login" replace />
+    }
+
+    console.log('✅ Access granted to protected route')
   }
 
   return children
@@ -43,6 +69,8 @@ function AppRoutes() {
     <Routes>
       {/* Auth Routes */}
       <Route path="/login" element={<Login />} />
+      <Route path="/admin/login" element={<Login />} /> {/* Invitation login */}
+      <Route path="/admin/upload-key" element={<PublicKeyUpload />} /> {/* Public key upload after invitation */}
 
       {/* Admin Routes */}
       <Route
