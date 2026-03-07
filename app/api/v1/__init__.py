@@ -42,3 +42,10 @@ api_router.include_router(
     prefix="/chatbot",
     tags=["Citizen Chatbot"],
 )
+
+# Include Budget Reallocation routes
+from app.reallocation.api.reallocation import router as reallocation_router
+api_router.include_router(
+    reallocation_router,
+    tags=["Budget Reallocation"],
+)

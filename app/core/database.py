@@ -66,6 +66,7 @@ async def connect_to_mongodb() -> None:
     from app.intelligence.models import AnomalyFlag, RiskScore, BudgetTransaction
     from app.fund_flow.models import FlowNode, FlowEdge
     from app.chatbot.models import ChatSession, ChatMessage
+    from app.reallocation.models import ReallocationTransaction
 
     await init_beanie(
         database=mongodb_database,
@@ -98,6 +99,8 @@ async def connect_to_mongodb() -> None:
             # Chatbot Models
             ChatSession,
             ChatMessage,
+            # Reallocation Models
+            ReallocationTransaction,
         ]
     )
 
