@@ -1,0 +1,52 @@
+[
+    {
+        "vendor_id": "VND-01",
+        "vendor_name": "Patil Civil Works",
+        "profession": "Civil Contractor",
+        "risk_rating": "LOW",
+        "registration_date": "2020-04-12",
+        "no_of_ongoing_projects": 213,
+        "budget_used": 343065939.77,
+        "budget_alloted": 515098909.65
+    },
+    {
+        "vendor_id": "VND-02",
+        "vendor_name": "Deshmukh Logistics",
+        "profession": "Transport & Logistics",
+        "risk_rating": "LOW",
+        "registration_date": "2020-04-12",
+        "no_of_ongoing_projects": 205,
+        "budget_used": 102934254.42,
+        "budget_alloted": 154901381.62
+    },
+    {
+        "vendor_id": "VND-03",
+        "vendor_name": "Sharma Medical Supplies",
+        "profession": "Medical Supplier",
+        "risk_rating": "LOW",
+        "registration_date": "2020-04-12",
+        "no_of_ongoing_projects": 186,
+        "budget_used": 472769741.13,
+        "budget_alloted": 709654611.69
+    },
+    {
+        "vendor_id": "VND-04",
+        "vendor_name": "Kulkarni IT Solutions",
+        "profession": "IT Services",
+        "risk_rating": "LOW",
+        "registration_date": "2020-04-12",
+        "no_of_ongoing_projects": 189,
+        "budget_used": 389385491.56,
+        "budget_alloted": 584578237.34
+    },
+    {
+        "vendor_id": "VND-05",
+        "vendor_name": "Shinde Stationers",
+        "profession": "Education & Stationery",
+        "risk_rating": "LOW",
+        "registration_date": "2020-04-12",
+        "no_of_ongoing_projects": 206,
+        "budget_used": 32043066.89,
+        "budget_alloted": 48564600.34
+    }
+]
