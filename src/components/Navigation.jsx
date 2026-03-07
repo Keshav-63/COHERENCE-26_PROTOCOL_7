@@ -373,7 +373,7 @@ import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   Menu, X, Home, Key, BarChart3, AlertTriangle, TrendingUp,
-  LogOut, Building2, Settings, ShieldCheck, Zap, Shield, GitBranch
+  LogOut, Building2, Settings, ShieldCheck, Zap, Shield, GitBranch, Brain
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { showSuccess } from '../utils/utils'
@@ -395,6 +395,7 @@ const Navigation = ({ role = 'admin' }) => {
     { path: '/admin/budget-analytics', label: 'Fiscal Analytics', icon: BarChart3 },
     { path: '/admin/risk-anomalies', label: 'Threat Detection', icon: AlertTriangle },
     { path: '/admin/predictive-modeling', label: 'AI Forecasting', icon: TrendingUp },
+    { path: '/admin/prediction-analysis', label: 'Prediction Analysis', icon: Brain },
   ]
 
   const employeeLinks = [

@@ -10,6 +10,7 @@ import PublicKeyUpload from './pages/admin/PublicKeyUpload'
 import BudgetAnalytics from './pages/admin/BudgetAnalytics'
 import RiskAnomalies from './pages/admin/RiskAnomalies'
 import PredictiveModeling from './pages/admin/PredictiveModeling'
+import PredictionAnalysis from './pages/admin/PredictionAnalysis'
 import IntelligenceDashboard from './pages/admin/IntelligenceDashboard'
 import EmployeeHome from './pages/employee/EmployeeHome'
 import KeyGeneration from './pages/employee/KeyGeneration'
@@ -120,6 +121,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute requiredRole="admin">
             <PredictiveModeling />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/prediction-analysis"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <PredictionAnalysis />
           </ProtectedRoute>
         }
       />
