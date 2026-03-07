@@ -117,3 +117,111 @@ async def get_analytics_dashboard(
         print(f"Error serving analytics dashboard: {e}")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/admin-dashboard", response_model=Dict[str, Any])
+async def get_admin_dashboard(
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Fetches the comprehensive data payload for the advanced Admin Command Center.
+    """
+    try:
+        # 1. Ministrywise Data (using the "is_admin_mock" flag)
+        alloc_cursor = db.budget_allocations.find({"is_admin_mock": True, "entity_type": "ministry"})
+        ministries = await alloc_cursor.to_list(length=100)
+        
+        ministrywise = []
+        total_allocation = 0
+        total_spent = 0
+        
+        for m in ministries:
+            alloc_id = str(m["_id"])
+            exp_cursor = db.expenditures.find({"allocation_id": alloc_id}).sort("month", -1)
+            exps = await exp_cursor.to_list(1)
+            spent = exps[0]["cumulative_expenditure"] if exps else 0
+            
+            ministrywise.append({
+                "ministry": m["entity_name"],
+                "allocated": m.get("budget_estimate", 0),
+                "spent": spent,
+                "percentage": round((spent / m.get("budget_estimate", 1)) * 100, 1) if m.get("budget_estimate", 0) > 0 else 0
+            })
+            total_allocation += m.get("budget_estimate", 0)
+            total_spent += spent
+            
+        # Optional: Add the national aggregate logic instead of summing, but summing is accurate here.
+        # Fallback to the 50B if missing
+        if total_allocation == 0:
+            total_allocation = 50000000000
+            
+        # 2. Monthly Trend Data (from National Trend Aggregate)
+        trend_cursor = db.expenditures.find({"entity_type": "national", "is_admin_mock": True}).sort("month", 1)
+        trends = await trend_cursor.to_list(length=12)
+        
+        monthly_trend = []
+        for t in trends:
+            # Reconstruct the month string based on month_num
+            months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            idx = t["month"] - 1
+            month_str = months[idx] if 0 <= idx < 12 else str(t["month"])
+            
+            monthly_trend.append({
+                "month": month_str,
+                "allocated": t.get("monthly_budget", 0),
+                "spent": t.get("expenditure_amount", 0),
+                "forecast": t.get("expenditure_amount", 0) * 1.08 # mock forecast logic
+            })
+            
+        # 3. Anomalies
+        anm_cursor = db.anomaly_flags.find({"is_admin_mock": True}).sort("detected_at", -1)
+        anomalies_raw = await anm_cursor.to_list(length=20)
+        anomalies = []
+        for a in anomalies_raw:
+            anomalies.append({
+                "id": a.get("trans_id", ""),
+                "type": a.get("anomaly_type", "Anomaly"),
+                "severity": a.get("severity", "FLAGGED"),
+                "state": a.get("dept_name", ""),
+                "ministry": a.get("ministry_code", ""),
+                "description": a.get("description", ""),
+                "amount": a.get("amount", 0)
+            })
+            
+        # 4. Reallocation Feed
+        txn_cursor = db.budget_transactions.find({"is_admin_mock": True}).sort("timestamp", -1)
+        txns_raw = await txn_cursor.to_list(length=10)
+        reallocations = []
+        for txn in txns_raw:
+            amt_cr = txn.get("amount", 0) / 10000000
+            reallocations.append({
+                "from": txn.get("from_department", ""),
+                "to": txn.get("to_department", ""),
+                "amount": f"₹{amt_cr:.1f} Cr",
+                "time": txn.get("formatted_time", "just now")
+            })
+            
+        # 5. Stress Heatmap
+        stress_cursor = db.risk_scores.find({"is_admin_mock": True}).sort("score", -1)
+        stress_raw = await stress_cursor.to_list(length=10)
+        stressData = []
+        for s in stress_raw:
+            stressData.append({
+                "name": s.get("department", ""),
+                "score": s.get("score", 0)
+            })
+            
+        return {
+            "totalAllocation": total_allocation,
+            "totalSpent": total_spent,
+            "ministrywise": ministrywise,
+            "monthlyTrend": monthly_trend,
+            "anomalies": anomalies,
+            "reallocations": reallocations,
+            "stressData": stressData
+        }
+        
+    except Exception as e:
+        print(f"Error serving admin dashboard: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
