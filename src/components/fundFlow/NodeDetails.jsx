@@ -34,9 +34,7 @@ const getRiskBadgeColor = (risk) => {
 const NodeDetails = ({ node, onClose }) => {
   if (!node) return null
 
-  const absorptionRate = node.actual_amount && node.allocated_amount
-    ? ((node.actual_amount / node.allocated_amount) * 100).toFixed(2)
-    : 0
+  const absorptionRate = node.absorption_rate || 0
 
   return (
     <Card className="w-96 max-h-[80vh] overflow-y-auto">
@@ -44,7 +42,7 @@ const NodeDetails = ({ node, onClose }) => {
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-neutral-900">
-            {node.name || node.code}
+            {node.node_name || node.node_code}
           </h3>
           <p className="text-sm text-neutral-600">{node.node_type}</p>
         </div>
@@ -59,10 +57,10 @@ const NodeDetails = ({ node, onClose }) => {
       </div>
 
       {/* Risk Badge */}
-      {node.risk_level && (
+      {node.risk_tier && (
         <div className="mb-4">
-          <Badge className={getRiskBadgeColor(node.risk_level)}>
-            {node.risk_level} RISK
+          <Badge className={getRiskBadgeColor(node.risk_tier)}>
+            {node.risk_tier} RISK
           </Badge>
         </div>
       )}
@@ -71,7 +69,7 @@ const NodeDetails = ({ node, onClose }) => {
       <div className="space-y-3 mb-4">
         <div>
           <label className="text-xs font-medium text-neutral-500">Code</label>
-          <p className="text-sm font-mono">{node.code}</p>
+          <p className="text-sm font-mono">{node.node_code}</p>
         </div>
 
         {node.description && (
@@ -90,14 +88,14 @@ const NodeDetails = ({ node, onClose }) => {
           <div>
             <label className="text-xs font-medium text-neutral-500">Allocated</label>
             <p className="text-lg font-semibold text-blue-600">
-              {formatCurrency(node.allocated_amount)}
+              {formatCurrency(node.total_allocated_cr * 1e7)}
             </p>
           </div>
 
           <div>
             <label className="text-xs font-medium text-neutral-500">Actual</label>
             <p className="text-lg font-semibold text-green-600">
-              {formatCurrency(node.actual_amount)}
+              {formatCurrency(node.total_spent_cr * 1e7)}
             </p>
           </div>
 
@@ -108,14 +106,14 @@ const NodeDetails = ({ node, onClose }) => {
               absorptionRate >= 50 ? 'text-yellow-600' :
               'text-red-600'
             }`}>
-              {absorptionRate}%
+              {absorptionRate.toFixed(2)}%
             </p>
           </div>
 
           <div>
             <label className="text-xs font-medium text-neutral-500">Unspent</label>
             <p className="text-lg font-semibold text-orange-600">
-              {formatCurrency((node.allocated_amount || 0) - (node.actual_amount || 0))}
+              {formatCurrency((node.total_allocated_cr || 0) * 1e7 - (node.total_spent_cr || 0) * 1e7)}
             </p>
           </div>
         </div>
