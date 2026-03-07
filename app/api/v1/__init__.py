@@ -1,7 +1,7 @@
 """API version 1"""
 
 from fastapi import APIRouter
-from app.api.v1.endpoints import auth, predictive_modeling, analytics
+from app.api.v1.endpoints import auth, predictive_modeling, analytics, predictions
 from app.security.api import security_router
 from app.intelligence.api.intelligence import router as intelligence_router
 
@@ -15,6 +15,7 @@ api_router.include_router(predictive_modeling.router, prefix="/predictive-modeli
 
 # Include analytics routes
 api_router.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
+api_router.include_router(predictions.router, prefix="/analytics", tags=["Analytics Predictions"])
 
 # Include security routes (multi-tenancy, invitations, admin auth)
 api_router.include_router(security_router)
