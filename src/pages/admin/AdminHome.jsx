@@ -269,8 +269,8 @@ const AdminHome = () => {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 13 }}>
               <thead>
                 <tr>
-                  {['#', 'From → To', 'Amount', 'Time', 'Status'].map((h, i) => (
-                    <th key={i} style={{ color: C.textMuted, paddingBottom: 15, fontWeight: 400, textAlign: i === 4 ? 'right' : 'left' }}>{h}</th>
+                  {['#', 'From → To', 'Amount', 'Status'].map((h, i) => (
+                    <th key={i} style={{ color: C.textMuted, paddingBottom: 15, fontWeight: 400, textAlign: i === 3 ? 'right' : 'left' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -288,7 +288,6 @@ const AdminHome = () => {
                       </div>
                     </td>
                     <td style={{ padding: '12px 0', borderTop: `1px solid ${C.borderColor}`, color: C.textMain, fontWeight: 500 }}>{txn.amount}</td>
-                    <td style={{ padding: '12px 0', borderTop: `1px solid ${C.borderColor}`, color: C.textMuted, fontSize: 12 }}>{txn.time}</td>
                     <td style={{ padding: '12px 0', borderTop: `1px solid ${C.borderColor}`, textAlign: 'right' }}>
                       <span style={{ background: 'rgba(52,168,83,0.15)', color: C.accentGreen, padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 600 }}>Completed</span>
                     </td>

@@ -259,8 +259,7 @@ const IntelligenceDashboard = () => {
             const Icon = tab.icon
             // Hide vendor tab for non-central admins
             if (tab.id === 'vendors' && !isCentralAdmin) return null
-            // Hide heatmap tab for non-central admins
-            if (tab.id === 'heatmap' && !isCentralAdmin) return null
+            // Heatmap tab visible to all admins
 
             return (
               <Button
@@ -518,45 +517,176 @@ const IntelligenceDashboard = () => {
 
       {activeTab === 'march-rush' && (
         <Card className="p-6 mb-8">
-          <h3 className="text-xl font-bold text-neutral-900 mb-4">
-            March Rush Risk Analysis
-          </h3>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-xl font-bold text-neutral-900">
+                March Rush Risk Analysis
+              </h3>
+              <p className="text-sm text-neutral-500 mt-1">
+                {marchRushData.length} entities analyzed • FY {marchRushData[0]?.fiscal_year || '2025-26'}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="px-2 py-1 bg-red-100 text-red-700 rounded font-bold">HIGH</span>
+              <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded font-bold">LOW</span>
+            </div>
+          </div>
 
           {marchRushData && marchRushData.length > 0 ? (
             <div className="space-y-4">
-              {marchRushData.map((dept, index) => (
-                <div
-                  key={index}
-                  className={`border rounded-lg p-4 ${getRiskColor(dept.risk_tier)}`}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <p className="text-lg font-bold text-neutral-900">
-                        {dept.dept_name || dept.entity_name}
-                      </p>
-                      <p className="text-sm text-neutral-600">{dept.dept_code}</p>
-                    </div>
-                    <span className={`px-3 py-1 rounded font-medium ${getRiskColor(dept.risk_tier)}`}>
-                      {dept.risk_tier}
-                    </span>
-                  </div>
+              {marchRushData.map((dept, index) => {
+                const utilPct = dept.utilization_pct || 0
+                const q4Pct = (dept.q4_spending_ratio_pct || 0)
+                const marchPct = (dept.march_spending_ratio_pct || 0)
+                const marchScore = dept.march_rush_score || 0
+                const budgetEst = dept.budget_estimate_cr || (dept.budget_estimate ? dept.budget_estimate / 10000000 : 0)
+                const actualExp = dept.actual_expenditure_cr || (dept.actual_expenditure ? dept.actual_expenditure / 10000000 : 0)
+                const remainingBudget = dept.remaining_budget_cr || (dept.remaining_budget ? dept.remaining_budget / 10000000 : 0)
+                const lapseRisk = dept.fund_lapse_risk || 0
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-neutral-600">Fund Lapse Risk</p>
-                      <p className="text-2xl font-bold text-red-600">
-                        {dept.fund_lapse_risk?.toFixed(1)}%
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-neutral-600">Estimated Lapse Amount</p>
-                      <p className="text-2xl font-bold text-red-600">
-                        ₹{dept.estimated_lapse_amount?.toFixed(2)} Cr
-                      </p>
+                return (
+                  <div
+                    key={index}
+                    className={`border rounded-xl overflow-hidden hover:shadow-lg transition-shadow ${getRiskColor(dept.fund_lapse_risk_level || dept.march_rush_risk || dept.risk_tier || 'LOW')}`}
+                  >
+                    {/* Header */}
+                    <div className="p-5">
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-mono text-xs text-neutral-500">
+                              {dept.entity_code || dept.dept_code}
+                            </span>
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getRiskColor(dept.fund_lapse_risk_level || dept.march_rush_risk || dept.risk_tier || 'LOW')}`}>
+                              {dept.fund_lapse_risk_level || dept.march_rush_risk || dept.risk_tier || '—'}
+                            </span>
+                            {dept.prev_march_rush_history && (
+                              <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-[10px] font-bold">
+                                REPEAT OFFENDER
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-lg font-bold text-neutral-900">
+                            {dept.entity_name || dept.dept_name}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-neutral-500 uppercase tracking-wider">March Rush Score</p>
+                          <p className="text-2xl font-black text-neutral-900">{marchScore.toFixed(1)}</p>
+                        </div>
+                      </div>
+
+                      {/* Metrics Grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                        <div className="p-3 bg-white bg-opacity-60 rounded-lg">
+                          <p className="text-[10px] text-neutral-500 uppercase tracking-wider mb-1">Budget Estimate</p>
+                          <p className="text-base font-bold text-neutral-900">₹{budgetEst.toFixed(1)} Cr</p>
+                        </div>
+                        <div className="p-3 bg-white bg-opacity-60 rounded-lg">
+                          <p className="text-[10px] text-neutral-500 uppercase tracking-wider mb-1">Actual Expenditure</p>
+                          <p className="text-base font-bold text-green-700">₹{actualExp.toFixed(1)} Cr</p>
+                        </div>
+                        <div className="p-3 bg-white bg-opacity-60 rounded-lg">
+                          <p className="text-[10px] text-neutral-500 uppercase tracking-wider mb-1">Remaining</p>
+                          <p className="text-base font-bold text-amber-700">₹{remainingBudget.toFixed(1)} Cr</p>
+                        </div>
+                        <div className="p-3 bg-white bg-opacity-60 rounded-lg">
+                          <p className="text-[10px] text-neutral-500 uppercase tracking-wider mb-1">Utilization</p>
+                          <p className="text-base font-bold text-blue-700">{utilPct.toFixed(1)}%</p>
+                        </div>
+                      </div>
+
+                      {/* Progress Bars */}
+                      <div className="space-y-3 mb-4">
+                        <div>
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span className="text-neutral-600 font-medium">Utilization Rate</span>
+                            <span className="font-bold text-neutral-800">{utilPct.toFixed(1)}%</span>
+                          </div>
+                          <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${utilPct > 90 ? 'bg-green-500' : utilPct > 70 ? 'bg-blue-500' : utilPct > 50 ? 'bg-amber-500' : 'bg-red-500'}`}
+                              style={{ width: `${Math.min(utilPct, 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span className="text-neutral-600 font-medium">Q4 Spending Ratio</span>
+                            <span className="font-bold text-neutral-800">{q4Pct.toFixed(1)}%</span>
+                          </div>
+                          <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${q4Pct > 40 ? 'bg-red-500' : q4Pct > 30 ? 'bg-amber-500' : 'bg-green-500'}`}
+                              style={{ width: `${Math.min(q4Pct, 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span className="text-neutral-600 font-medium">March Spending Ratio</span>
+                            <span className="font-bold text-neutral-800">{marchPct.toFixed(1)}%</span>
+                          </div>
+                          <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${marchPct > 15 ? 'bg-red-500' : marchPct > 8 ? 'bg-amber-500' : 'bg-green-500'}`}
+                              style={{ width: `${Math.min(marchPct * 3, 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Fund Lapse Risk */}
+                      <div className="grid grid-cols-2 gap-3 mb-4">
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <p className="text-xs text-red-600 font-medium mb-1">Fund Lapse Risk</p>
+                          <p className="text-xl font-bold text-red-700">
+                            {typeof lapseRisk === 'string' ? lapseRisk : `${lapseRisk.toFixed(1)}%`}
+                          </p>
+                        </div>
+                        <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                          <p className="text-xs text-orange-600 font-medium mb-1">Est. Lapse Amount</p>
+                          <p className="text-xl font-bold text-orange-700">
+                            ₹{(dept.estimated_lapse_amount || 0).toFixed(2)} Cr
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* March Rush Signals */}
+                      {dept.march_rush_signals && dept.march_rush_signals.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-xs text-neutral-500 font-bold uppercase tracking-wider mb-2">Risk Signals</p>
+                          <div className="flex flex-wrap gap-2">
+                            {dept.march_rush_signals.map((signal, idx) => (
+                              <span
+                                key={idx}
+                                className="px-2.5 py-1 bg-red-50 text-red-700 border border-red-200 rounded-full text-[11px] font-semibold"
+                              >
+                                ⚠ {signal.replace(/_/g, ' ')}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Gemini AI Warning */}
+                      {dept.gemini_warning && (
+                        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                          <div className="flex items-start gap-2">
+                            <TrendingUp size={16} className="text-blue-600 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="text-xs text-blue-600 font-bold uppercase tracking-wider mb-1">Gemini AI Analysis</p>
+                              <p className="text-sm text-blue-900 leading-relaxed">
+                                {dept.gemini_warning}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           ) : (
             <div className="text-center py-12">
@@ -632,41 +762,111 @@ const IntelligenceDashboard = () => {
         </Card>
       )}
 
-      {activeTab === 'heatmap' && isCentralAdmin && (
+      {activeTab === 'heatmap' && (
         <Card className="p-6 mb-8">
-          <h3 className="text-xl font-bold text-neutral-900 mb-4">
-            Ministry Leakage Risk Heatmap ({leakageRisks.length} ministries)
-          </h3>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-xl font-bold text-neutral-900">
+                Ministry Leakage Risk Heatmap
+              </h3>
+              <p className="text-sm text-neutral-500 mt-1">
+                {leakageRisks.length} ministries analyzed
+              </p>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="px-2 py-1 bg-red-100 text-red-700 rounded font-bold">RED</span>
+              <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded font-bold">ORANGE</span>
+              <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded font-bold">YELLOW</span>
+              <span className="px-2 py-1 bg-green-100 text-green-700 rounded font-bold">GREEN</span>
+            </div>
+          </div>
 
           {leakageRisks && leakageRisks.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {leakageRisks.slice(0, 30).map((risk, index) => (
-                <div
-                  key={index}
-                  className={`p-4 rounded-lg border ${getRiskColor(risk.risk_tier)}`}
-                >
-                  <p className="font-bold text-neutral-900 mb-2">
-                    {risk.ministry_name}
-                  </p>
-                  <div className="grid grid-cols-2 gap-2 mb-2">
-                    <div>
-                      <p className="text-xs text-neutral-600">Risk Score</p>
-                      <p className="text-2xl font-bold">
-                        {(risk.leakage_risk_score * 100).toFixed(0)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-neutral-600">Tier</p>
-                      <p className="text-2xl font-bold">{risk.risk_tier}</p>
+            <div className="space-y-4">
+              {leakageRisks.slice(0, 30).map((risk, index) => {
+                const utilPct = risk.utilization_pct || 0
+                const riskPct = (risk.leakage_risk_score || 0) * 100
+                const budgetCr = risk.total_budget_estimate_cr || 0
+                const actualCr = risk.total_actual_expenditure_cr || 0
+                const remainCr = risk.remaining_budget_cr || (budgetCr - actualCr)
+
+                return (
+                  <div
+                    key={index}
+                    className={`border rounded-xl overflow-hidden hover:shadow-lg transition-shadow ${getRiskColor(risk.risk_tier)}`}
+                  >
+                    <div className="p-5">
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-mono text-xs text-neutral-500">
+                              {risk.ministry_code}
+                            </span>
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getRiskColor(risk.risk_tier)}`}>
+                              {risk.risk_tier}
+                            </span>
+                          </div>
+                          <p className="text-lg font-bold text-neutral-900">
+                            {risk.ministry_name}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-neutral-500 uppercase tracking-wider">Risk Score</p>
+                          <p className="text-2xl font-black text-neutral-900">{riskPct.toFixed(0)}</p>
+                        </div>
+                      </div>
+
+                      {/* Metrics Grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                        <div className="p-3 bg-white bg-opacity-60 rounded-lg">
+                          <p className="text-[10px] text-neutral-500 uppercase tracking-wider mb-1">Budget Estimate</p>
+                          <p className="text-base font-bold text-neutral-900">₹{budgetCr.toLocaleString()} Cr</p>
+                        </div>
+                        <div className="p-3 bg-white bg-opacity-60 rounded-lg">
+                          <p className="text-[10px] text-neutral-500 uppercase tracking-wider mb-1">Actual Expenditure</p>
+                          <p className="text-base font-bold text-green-700">₹{actualCr.toLocaleString()} Cr</p>
+                        </div>
+                        <div className="p-3 bg-white bg-opacity-60 rounded-lg">
+                          <p className="text-[10px] text-neutral-500 uppercase tracking-wider mb-1">Remaining</p>
+                          <p className="text-base font-bold text-amber-700">₹{remainCr.toLocaleString()} Cr</p>
+                        </div>
+                        <div className="p-3 bg-white bg-opacity-60 rounded-lg">
+                          <p className="text-[10px] text-neutral-500 uppercase tracking-wider mb-1">Schemes</p>
+                          <p className="text-base font-bold text-blue-700">{risk.scheme_count}</p>
+                        </div>
+                      </div>
+
+                      {/* Progress Bars */}
+                      <div className="space-y-3">
+                        <div>
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span className="text-neutral-600 font-medium">Utilization Rate</span>
+                            <span className="font-bold text-neutral-800">{utilPct.toFixed(1)}%</span>
+                          </div>
+                          <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${utilPct > 80 ? 'bg-green-500' : utilPct > 60 ? 'bg-blue-500' : utilPct > 40 ? 'bg-amber-500' : 'bg-red-500'}`}
+                              style={{ width: `${Math.min(utilPct, 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span className="text-neutral-600 font-medium">Leakage Risk</span>
+                            <span className="font-bold text-neutral-800">{riskPct.toFixed(0)}%</span>
+                          </div>
+                          <div className="h-2 bg-neutral-200 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${riskPct > 70 ? 'bg-red-500' : riskPct > 50 ? 'bg-orange-500' : riskPct > 30 ? 'bg-yellow-500' : 'bg-green-500'}`}
+                              style={{ width: `${Math.min(riskPct, 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="text-xs text-neutral-600 space-y-1">
-                    <p>Budget: ₹{risk.total_budget_estimate_cr?.toLocaleString()} Cr</p>
-                    <p>Utilized: {risk.utilization_pct?.toFixed(1)}%</p>
-                    <p>Schemes: {risk.scheme_count}</p>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           ) : (
             <div className="text-center py-12">

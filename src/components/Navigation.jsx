@@ -435,7 +435,7 @@ const Navigation = ({ role = 'admin' }) => {
               <Building2 size={24} className="text-white" />
             </div>
             <div>
-              <h1 className="font-bold text-xl text-white tracking-tight">BIP Nexus</h1>
+              <h1 className="font-bold text-xl text-white tracking-tight">PRAHARI</h1>
               <p className="text-xs text-blue-300 font-medium uppercase tracking-wider">Intelligence</p>
             </div>
           </Link>
@@ -486,10 +486,10 @@ const Navigation = ({ role = 'admin' }) => {
 
         {/* Footer Actions */}
         <div className="p-4 border-t border-blue-800/40 bg-blue-950/50 space-y-2 backdrop-blur-md">
-          <button className="w-full flex items-center gap-3 px-4 py-3 text-blue-300 hover:bg-blue-800/50 hover:text-white rounded-xl transition-all duration-200 text-sm font-medium">
+          {/* <button className="w-full flex items-center gap-3 px-4 py-3 text-blue-300 hover:bg-blue-800/50 hover:text-white rounded-xl transition-all duration-200 text-sm font-medium">
             <Settings size={20} className="text-blue-400" />
             <span>System Settings</span>
-          </button>
+          </button> */}
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 text-red-300 hover:bg-red-500/20 hover:text-red-200 rounded-xl transition-all duration-200 text-sm font-medium"
