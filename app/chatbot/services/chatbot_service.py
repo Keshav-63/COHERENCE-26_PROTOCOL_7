@@ -66,22 +66,7 @@ async def get_location_context(latitude: float, longitude: float) -> Dict:
     Get location context based on lat/long
     Returns nearby location, district, state info
     """
-    from app.budget.models.location import Location, District, State
-
-    # Find nearest location within 50km radius
-    nearby_locations = await Location.find(
-        {
-            "geo_location": {
-                "$near": {
-                    "$geometry": {"type": "Point", "coordinates": [longitude, latitude]},
-                    "$maxDistance": 50000  # 50km in meters
-                }
-            }
-        }
-    ).limit(5).to_list()
-
-    # Find state and district based on coordinates
-    # For now, we'll use the nearest location's state/district
+    # Default location info to return if anything fails
     location_info = {
         "latitude": latitude,
         "longitude": longitude,
@@ -91,42 +76,61 @@ async def get_location_context(latitude: float, longitude: float) -> Dict:
         "nearby_projects": []
     }
 
-    if nearby_locations:
-        nearest = nearby_locations[0]
-        location_info["nearest_location"] = {
-            "name": nearest.location_name,
-            "type": nearest.location_type,
-            "distance_km": calculate_distance(latitude, longitude, nearest.latitude, nearest.longitude)
-        }
+    try:
+        from app.budget.models.location import Location, District, State
 
-        # Get district info
-        district = await District.find_one({"district_code": nearest.district_code})
-        if district:
-            location_info["district"] = {
-                "name": district.district_name,
-                "code": district.district_code,
-                "population": district.population,
-                "area_sq_km": district.area_sq_km
-            }
-
-        # Get state info
-        state = await State.find_one({"state_code": nearest.state_code})
-        if state:
-            location_info["state"] = {
-                "name": state.state_name,
-                "code": state.state_code,
-                "capital": state.capital_city,
-                "population": state.population
-            }
-
-        location_info["nearby_projects"] = [
+        # Find nearest location within 50km radius
+        nearby_locations = await Location.find(
             {
-                "name": loc.location_name,
-                "type": loc.location_type,
-                "schemes": loc.related_schemes[:3] if loc.related_schemes else []
+                "geo_location": {
+                    "$near": {
+                        "$geometry": {"type": "Point", "coordinates": [longitude, latitude]},
+                        "$maxDistance": 50000  # 50km in meters
+                    }
+                }
             }
-            for loc in nearby_locations[:5]
-        ]
+        ).limit(5).to_list()
+
+        if nearby_locations:
+            nearest = nearby_locations[0]
+            location_info["nearest_location"] = {
+                "name": nearest.location_name,
+                "type": nearest.location_type,
+                "distance_km": calculate_distance(latitude, longitude, nearest.latitude, nearest.longitude)
+            }
+
+            # Get district info
+            district = await District.find_one({"district_code": nearest.district_code})
+            if district:
+                location_info["district"] = {
+                    "name": district.district_name,
+                    "code": district.district_code,
+                    "population": district.population,
+                    "area_sq_km": district.area_sq_km
+                }
+
+            # Get state info
+            state = await State.find_one({"state_code": nearest.state_code})
+            if state:
+                location_info["state"] = {
+                    "name": state.state_name,
+                    "code": state.state_code,
+                    "capital": state.capital_city,
+                    "population": state.population
+                }
+
+            location_info["nearby_projects"] = [
+                {
+                    "name": loc.location_name,
+                    "type": loc.location_type,
+                    "schemes": loc.related_schemes[:3] if loc.related_schemes else []
+                }
+                for loc in nearby_locations[:5]
+            ]
+
+    except Exception as e:
+        logger.warning(f"Error getting location context for ({latitude}, {longitude}): {e}")
+        # Return default location_info with coordinates
 
     return location_info
 
@@ -135,88 +139,107 @@ async def get_budget_data_for_location(location_context: Dict) -> Dict:
     """
     Get budget allocation and expenditure data for the user's location
     """
-    from app.budget.models.allocation import BudgetAllocation, Expenditure
+    try:
+        from app.budget.models.allocation import BudgetAllocation, Expenditure
 
-    if not location_context.get("state"):
-        return {"message": "Location not identified"}
+        if not location_context or not location_context.get("state"):
+            return {"message": "Location not identified"}
 
-    state_code = location_context["state"]["code"]
-    district_code = location_context.get("district", {}).get("code")
+        state_code = location_context["state"]["code"]
+        district_code = location_context.get("district", {}).get("code")
 
-    # Get state-level budget allocations
-    state_allocations = await BudgetAllocation.find(
-        {"state_code": state_code, "fiscal_year": "2024-25"}
-    ).limit(10).to_list()
-
-    # Get district-level expenditures if available
-    district_expenditures = []
-    if district_code:
-        district_expenditures = await Expenditure.find(
+        # Get state-level budget allocations
+        state_allocations = await BudgetAllocation.find(
             {"state_code": state_code, "fiscal_year": "2024-25"}
         ).limit(10).to_list()
 
-    total_budget = sum([alloc.budget_estimate for alloc in state_allocations])
-    total_expenditure = sum([exp.cumulative_expenditure for exp in district_expenditures])
+        # Get district-level expenditures if available
+        district_expenditures = []
+        if district_code:
+            district_expenditures = await Expenditure.find(
+                {"state_code": state_code, "fiscal_year": "2024-25"}
+            ).limit(10).to_list()
 
-    return {
-        "state": location_context["state"]["name"],
-        "district": location_context.get("district", {}).get("name"),
-        "total_budget_cr": round(total_budget, 2),
-        "total_expenditure_cr": round(total_expenditure, 2),
-        "utilization_pct": round((total_expenditure / total_budget * 100), 2) if total_budget > 0 else 0,
-        "top_schemes": [
-            {
-                "name": alloc.scheme_name or alloc.entity_name,
-                "budget_cr": alloc.budget_estimate,
-                "ministry": alloc.ministry_name
-            }
-            for alloc in state_allocations[:5]
-        ]
-    }
+        total_budget = sum([alloc.budget_estimate for alloc in state_allocations])
+        total_expenditure = sum([exp.cumulative_expenditure for exp in district_expenditures])
+
+        return {
+            "state": location_context["state"]["name"],
+            "district": location_context.get("district", {}).get("name"),
+            "total_budget_cr": round(total_budget, 2),
+            "total_expenditure_cr": round(total_expenditure, 2),
+            "utilization_pct": round((total_expenditure / total_budget * 100), 2) if total_budget > 0 else 0,
+            "top_schemes": [
+                {
+                    "name": alloc.scheme_name or alloc.entity_name,
+                    "budget_cr": alloc.budget_estimate,
+                    "ministry": alloc.ministry_name
+                }
+                for alloc in state_allocations[:5]
+            ]
+        }
+    except Exception as e:
+        logger.warning(f"Error getting budget data: {e}")
+        return {"message": "Budget data unavailable"}
 
 
 async def get_vendor_contractors_for_location(location_context: Dict) -> List[Dict]:
     """
     Get vendor and contractor information for the user's location
     """
-    from app.budget.models.vendor import Vendor, Contract
+    try:
+        from app.budget.models.vendor import Vendor, Contract
 
-    if not location_context.get("state"):
+        if not location_context or not location_context.get("state"):
+            return []
+
+        state_code = location_context["state"]["code"]
+
+        # Get vendors operating in this state
+        vendors = await Vendor.find(
+            {"state_code": state_code, "vendor_status": "active"}
+        ).limit(10).to_list()
+
+        # Get contracts in this area
+        contracts = await Contract.find(
+            {"operation_state_code": state_code, "contract_status": {"$in": ["in_progress", "awarded"]}}
+        ).limit(10).to_list()
+
+        vendor_data = []
+        for vendor in vendors[:5]:
+            vendor_contracts = [c for c in contracts if c.vendor_code == vendor.vendor_code]
+            vendor_data.append({
+                "vendor_name": vendor.vendor_name,
+                "vendor_code": vendor.vendor_code,
+                "vendor_type": vendor.vendor_type,
+                "total_contracts": vendor.total_contracts_awarded,
+                "total_value_cr": vendor.total_contract_value,
+                "performance_rating": vendor.performance_rating,
+                "is_msme": vendor.is_msme,
+                "active_contracts": len(vendor_contracts)
+            })
+
+        return vendor_data
+    except Exception as e:
+        logger.warning(f"Error getting vendor data: {e}")
         return []
-
-    state_code = location_context["state"]["code"]
-
-    # Get vendors operating in this state
-    vendors = await Vendor.find(
-        {"state_code": state_code, "vendor_status": "active"}
-    ).limit(10).to_list()
-
-    # Get contracts in this area
-    contracts = await Contract.find(
-        {"operation_state_code": state_code, "contract_status": {"$in": ["in_progress", "awarded"]}}
-    ).limit(10).to_list()
-
-    vendor_data = []
-    for vendor in vendors[:5]:
-        vendor_contracts = [c for c in contracts if c.vendor_code == vendor.vendor_code]
-        vendor_data.append({
-            "vendor_name": vendor.vendor_name,
-            "vendor_code": vendor.vendor_code,
-            "vendor_type": vendor.vendor_type,
-            "total_contracts": vendor.total_contracts_awarded,
-            "total_value_cr": vendor.total_contract_value,
-            "performance_rating": vendor.performance_rating,
-            "is_msme": vendor.is_msme,
-            "active_contracts": len(vendor_contracts)
-        })
-
-    return vendor_data
 
 
 async def build_system_prompt(location_context: Dict, budget_data: Dict, vendor_data: List[Dict], user_query: str) -> str:
     """
     Build comprehensive system prompt for Gemini with location and data context
     """
+    # Handle None location_context
+    if location_context is None:
+        location_context = {
+            "latitude": 0.0,
+            "longitude": 0.0,
+            "nearest_location": None,
+            "district": None,
+            "state": None,
+            "nearby_projects": []
+        }
+
     location_name = "Unknown Location"
     if location_context.get("nearest_location"):
         location_name = location_context["nearest_location"]["name"]
@@ -225,19 +248,32 @@ async def build_system_prompt(location_context: Dict, budget_data: Dict, vendor_
     if location_context.get("state"):
         location_name = f"{location_name}, {location_context['state']['name']}"
 
+    # Extra safety: ensure location_context is a dict before using it
+    lat = location_context.get('latitude', 0.0) if isinstance(location_context, dict) else 0.0
+    lon = location_context.get('longitude', 0.0) if isinstance(location_context, dict) else 0.0
+    district_name = (location_context.get('district') or {}).get('name', 'N/A') if isinstance(location_context, dict) else 'N/A'
+    state_name = (location_context.get('state') or {}).get('name', 'N/A') if isinstance(location_context, dict) else 'N/A'
+    state_pop = (location_context.get('state') or {}).get('population', 'N/A') if isinstance(location_context, dict) else 'N/A'
+
     prompt = f"""You are GovGenie, an AI-powered public finance assistant for Indian citizens. Your purpose is to help citizens understand how public money is being allocated and spent in their area with complete transparency.
 
 ═══════════════════════════════════════════════════════════════════
 CITIZEN'S LOCATION CONTEXT
 ═══════════════════════════════════════════════════════════════════
 📍 Location: {location_name}
-🗺️  Coordinates: {location_context['latitude']}, {location_context['longitude']}
-🏘️  District: {location_context.get('district', {}).get('name', 'N/A')}
-🏛️  State: {location_context.get('state', {}).get('name', 'N/A')}
-👥 State Population: {location_context.get('state', {}).get('population', 'N/A'):,}"""
+🗺️  Coordinates: {lat}, {lon}
+🏘️  District: {district_name}
+🏛️  State: {state_name}
+👥 State Population: {state_pop if isinstance(state_pop, int) else 'N/A'}"""
 
-    if location_context.get("district"):
-        prompt += f"\n👥 District Population: {location_context['district'].get('population', 'N/A'):,}"
+    if isinstance(location_context, dict) and location_context.get("district"):
+        dist_pop = location_context['district'].get('population', 'N/A')
+        if isinstance(dist_pop, int):
+            prompt += f"\n👥 District Population: {dist_pop:,}"
+
+    # Handle None budget_data
+    if budget_data is None:
+        budget_data = {}
 
     if budget_data.get("total_budget_cr"):
         prompt += f"""
@@ -256,6 +292,10 @@ TOP GOVERNMENT SCHEMES IN YOUR AREA:"""
             prompt += f"\n   • Budget: ₹{scheme['budget_cr']:,.2f} Crore"
             prompt += f"\n   • Ministry: {scheme['ministry']}"
 
+    # Handle None vendor_data
+    if vendor_data is None:
+        vendor_data = []
+
     if vendor_data:
         prompt += f"""
 
@@ -272,7 +312,7 @@ ACTIVE CONTRACTORS & VENDORS IN YOUR AREA
             if vendor.get('is_msme'):
                 prompt += f"\n   • MSME Registered: Yes ✓"
 
-    if location_context.get("nearby_projects"):
+    if isinstance(location_context, dict) and location_context.get("nearby_projects"):
         prompt += f"""
 
 ═══════════════════════════════════════════════════════════════════
@@ -381,19 +421,20 @@ async def ask_govgenie(query: str, latitude: float, longitude: float) -> Dict:
 
         # Build location string
         location_str = "Unknown Location"
-        if location_context.get("nearest_location"):
-            location_str = f"{location_context['nearest_location']['name']}"
-            if location_context.get("district"):
-                location_str += f", {location_context['district']['name']}"
-            if location_context.get("state"):
-                location_str += f", {location_context['state']['name']}"
+        if isinstance(location_context, dict):
+            if location_context.get("nearest_location"):
+                location_str = f"{location_context['nearest_location']['name']}"
+                if location_context.get("district"):
+                    location_str += f", {location_context['district']['name']}"
+                if location_context.get("state"):
+                    location_str += f", {location_context['state']['name']}"
 
         logger.info(f"Successfully generated response for location: {location_str}")
 
         return {
             "answer": answer,
             "location_context": location_str,
-            "budget_summary": budget_data if budget_data.get("total_budget_cr") else None,
+            "budget_summary": budget_data if isinstance(budget_data, dict) and budget_data.get("total_budget_cr") else None,
             "sources": ["Government Budget Database", "Public Contracts Registry", "Location Geospatial Data"],
             "model": GEMINI_MODEL,
             "error": False

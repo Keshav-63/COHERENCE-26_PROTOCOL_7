@@ -57,9 +57,24 @@ async def get_anomaly_summary(db: AsyncIOMotorDatabase) -> dict:
         )
 
         # Get critical anomaly flags
-        critical_flags = await db["anomaly_flags"].find(
+        critical_flags_docs = await db["anomaly_flags"].find(
             {"severity": "CRITICAL"}
         ).to_list(10)
+
+        # Convert to JSON-serializable format (remove ObjectId)
+        critical_flags = [
+            {
+                "trans_id": flag.get("trans_id"),
+                "dept_name": flag.get("dept_name"),
+                "anomaly_type": flag.get("anomaly_type"),
+                "severity": flag.get("severity"),
+                "risk_score": flag.get("risk_score"),
+                "description": flag.get("description"),
+                "amount": flag.get("amount"),
+                "estimated_leakage": flag.get("estimated_leakage"),
+            }
+            for flag in critical_flags_docs
+        ]
 
         return {
             "critical_transactions": critical_txns,
