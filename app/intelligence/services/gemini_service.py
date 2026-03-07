@@ -42,10 +42,10 @@ def _get_gemini_model():
         return None
 
     try:
-        import google.generativeai as genai
-        genai.configure(api_key=api_key)
-        _gemini_model = genai.GenerativeModel(GEMINI_MODEL)
-        logger.info(f"Gemini model '{GEMINI_MODEL}' initialized.")
+        from google import genai
+        client = genai.Client(api_key=api_key)
+        _gemini_model = client
+        logger.info(f"Gemini client initialized for model '{GEMINI_MODEL}'.")
         return _gemini_model
     except Exception as e:
         logger.error(f"Failed to initialize Gemini: {e}")
@@ -54,11 +54,11 @@ def _get_gemini_model():
 
 async def _call_gemini(prompt: str, max_chars: int = 800) -> Optional[str]:
     """Single call to Gemini with safety fallback."""
-    model = _get_gemini_model()
-    if model is None:
+    client = _get_gemini_model()
+    if client is None:
         return None
     try:
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(model=GEMINI_MODEL, contents=prompt)
         text = response.text.strip()
         return text[:max_chars] if len(text) > max_chars else text
     except Exception as e:

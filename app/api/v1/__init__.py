@@ -25,3 +25,19 @@ api_router.include_router(
     prefix="/intelligence",
     tags=["PRAHARI Intelligence"],
 )
+
+# Include Fund Flow Knowledge Graph routes
+from app.fund_flow.api.fund_flow import router as fund_flow_router
+api_router.include_router(
+    fund_flow_router,
+    prefix="/fund-flow",
+    tags=["Fund Flow Knowledge Graph"],
+)
+
+# Include Citizen Chatbot routes
+from app.chatbot.api.chatbot import router as chatbot_router
+api_router.include_router(
+    chatbot_router,
+    prefix="/chatbot",
+    tags=["Citizen Chatbot"],
+)
