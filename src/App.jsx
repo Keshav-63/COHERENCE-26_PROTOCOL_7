@@ -14,6 +14,15 @@ import IntelligenceDashboard from './pages/admin/IntelligenceDashboard'
 import EmployeeHome from './pages/employee/EmployeeHome'
 import KeyGeneration from './pages/employee/KeyGeneration'
 
+// Fund Flow Pages
+import FundFlowDashboard from './pages/fundFlow/FundFlowDashboard'
+import MinistryFlowView from './pages/fundFlow/MinistryFlowView'
+import StateFlowView from './pages/fundFlow/StateFlowView'
+import FundTracer from './pages/fundFlow/FundTracer'
+import BottleneckAnalysis from './pages/fundFlow/BottleneckAnalysis'
+import VendorTrail from './pages/fundFlow/VendorTrail'
+import AbsorptionLeaderboard from './pages/fundFlow/AbsorptionLeaderboard'
+
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { isAuthenticated, user, admin, loading } = useAuth()
@@ -123,6 +132,64 @@ function AppRoutes() {
         }
       />
 
+      {/* Fund Flow Routes - Admin */}
+      <Route
+        path="/admin/fund-flow"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <FundFlowDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fund-flow/ministry/:ministryCode?"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <MinistryFlowView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fund-flow/state/:stateCode?"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <StateFlowView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fund-flow/trace"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <FundTracer />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fund-flow/bottlenecks"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <BottleneckAnalysis />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fund-flow/vendor/:vendorId?"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <VendorTrail />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fund-flow/absorption"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <AbsorptionLeaderboard />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Employee Routes */}
       <Route
         path="/employee/dashboard"
@@ -169,6 +236,64 @@ function AppRoutes() {
         element={
           <ProtectedRoute requiredRole="employee">
             <IntelligenceDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Fund Flow Routes - Employee */}
+      <Route
+        path="/employee/fund-flow"
+        element={
+          <ProtectedRoute requiredRole="employee">
+            <FundFlowDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employee/fund-flow/ministry/:ministryCode?"
+        element={
+          <ProtectedRoute requiredRole="employee">
+            <MinistryFlowView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employee/fund-flow/state/:stateCode?"
+        element={
+          <ProtectedRoute requiredRole="employee">
+            <StateFlowView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employee/fund-flow/trace"
+        element={
+          <ProtectedRoute requiredRole="employee">
+            <FundTracer />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employee/fund-flow/bottlenecks"
+        element={
+          <ProtectedRoute requiredRole="employee">
+            <BottleneckAnalysis />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employee/fund-flow/vendor/:vendorId?"
+        element={
+          <ProtectedRoute requiredRole="employee">
+            <VendorTrail />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employee/fund-flow/absorption"
+        element={
+          <ProtectedRoute requiredRole="employee">
+            <AbsorptionLeaderboard />
           </ProtectedRoute>
         }
       />

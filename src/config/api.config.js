@@ -79,6 +79,20 @@ export const ENDPOINTS = {
     SCHEMES: 'predictive-modeling/schemes',
   },
 
+  // Fund Flow endpoints
+  FUND_FLOW: {
+    GRAPH: 'fund-flow/graph',
+    MINISTRY_GRAPH: (code) => `fund-flow/graph/ministry/${code}`,
+    STATE_GRAPH: (code) => `fund-flow/graph/state/${code}`,
+    NODE: (id) => `fund-flow/node/${id}`,
+    TRACE: 'fund-flow/trace',
+    BOTTLENECKS: 'fund-flow/bottlenecks',
+    VENDOR_TRAIL: (id) => `fund-flow/vendor/${id}/trail`,
+    ABSORPTION: 'fund-flow/absorption',
+    SUMMARY: 'fund-flow/summary',
+    REBUILD: 'fund-flow/rebuild',
+  },
+
   // Health check
   HEALTH: 'health',
   ROOT: '',

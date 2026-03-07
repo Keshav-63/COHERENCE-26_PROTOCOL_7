@@ -373,7 +373,7 @@ import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   Menu, X, Home, Key, BarChart3, AlertTriangle, TrendingUp,
-  LogOut, Building2, Settings, ShieldCheck, Zap, Shield
+  LogOut, Building2, Settings, ShieldCheck, Zap, Shield, GitBranch
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { showSuccess } from '../utils/utils'
@@ -390,6 +390,7 @@ const Navigation = ({ role = 'admin' }) => {
   const adminLinks = [
     { path: '/admin/dashboard', label: 'Command Center', icon: Home },
     { path: '/admin/intelligence', label: 'PRAHARI Intelligence', icon: Shield },
+    { path: '/admin/fund-flow', label: 'Fund Flow Graph', icon: GitBranch },
     { path: '/admin/key-management', label: 'Access Control', icon: Key },
     { path: '/admin/budget-analytics', label: 'Fiscal Analytics', icon: BarChart3 },
     { path: '/admin/risk-anomalies', label: 'Threat Detection', icon: AlertTriangle },
@@ -399,6 +400,7 @@ const Navigation = ({ role = 'admin' }) => {
   const employeeLinks = [
     { path: '/employee/dashboard', label: 'State Dashboard', icon: Home },
     { path: '/employee/intelligence', label: 'Intelligence Reports', icon: Shield },
+    { path: '/employee/fund-flow', label: 'Fund Flow Graph', icon: GitBranch },
     { path: '/employee/key-generation', label: 'Security Setup', icon: Key },
     { path: '/employee/budget-analytics', label: 'My Allocations', icon: BarChart3 },
     { path: '/employee/risk-anomalies', label: 'Report Logs', icon: AlertTriangle },
